@@ -6,7 +6,7 @@
 A TypeScript-based MCP server that enables testing of REST APIs through Cline. This tool allows you to test and interact with any REST API endpoints directly from your development environment.
 
 <a href="https://glama.ai/mcp/servers/izr2sp4rqo">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/izr2sp4rqo/badge" />
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/izr2sp4rqo/badge?refresh=1234" />
 </a>
 
 ## Installation
