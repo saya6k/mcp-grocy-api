@@ -1,7 +1,7 @@
 # MCP REST API Tester
-[![smithery badge](https://smithery.ai/badge/dkmaker-mcp-rest-api)](https://smithery.ai/server/dkmaker-mcp-rest-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NPM Package](https://img.shields.io/npm/v/dkmaker-mcp-rest-api.svg)](https://www.npmjs.com/package/dkmaker-mcp-rest-api)
+[![smithery badge](https://smithery.ai/badge/dkmaker-mcp-rest-api)](https://smithery.ai/server/dkmaker-mcp-rest-api)
 
 A TypeScript-based MCP server that enables testing of REST APIs through Cline. This tool allows you to test and interact with any REST API endpoints directly from your development environment.
 
