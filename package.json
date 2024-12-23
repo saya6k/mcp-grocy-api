@@ -39,12 +39,12 @@
   "author": "zenturacp",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zenturacp/mcp-rest-api.git"
+    "url": "git+https://github.com/dkmaker/mcp-rest-api.git"
   },
   "bugs": {
-    "url": "https://github.com/zenturacp/mcp-rest-api/issues"
+    "url": "https://github.com/dkmaker/mcp-rest-api/issues"
   },
-  "homepage": "https://github.com/zenturacp/mcp-rest-api#readme",
+  "homepage": "https://github.com/dkmaker/mcp-rest-api#readme",
   "engines": {
     "node": ">=18.0.0"
   }
