@@ -1,0 +1,19 @@
+name: Refresh Badges
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run at 00:00 UTC every day
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh badges
+        uses: b3b00/refreshBadgesAction@v1.0.7
+        with:
+          repository: 'zenturacp/mcp-rest-api'
+          branch: 'main'
