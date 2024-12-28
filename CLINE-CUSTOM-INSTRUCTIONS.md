@@ -1,6 +1,6 @@
 # REST API Testing Instructions
 
-Use this tool when testing, debugging, or interacting with REST API endpoints. The tool provides comprehensive request/response information and handles authentication automatically.
+The `test_request` tool enables testing, debugging, and interacting with REST API endpoints. The tool provides comprehensive request/response information and handles authentication automatically.
 
 ## When to Use
 

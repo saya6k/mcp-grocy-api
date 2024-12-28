@@ -10,10 +10,19 @@ import {
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 import axios, { AxiosInstance, AxiosRequestConfig, Method } from 'axios';
-import { VERSION, PACKAGE_NAME, SERVER_NAME } from './version.js';
+import { VERSION, SERVER_NAME } from './version.js';
 
 if (!process.env.REST_BASE_URL) {
   throw new Error('REST_BASE_URL environment variable is required');
+}
+
+// Default response size limit: 10KB (10000 bytes)
+const RESPONSE_SIZE_LIMIT = process.env.REST_RESPONSE_SIZE_LIMIT 
+  ? parseInt(process.env.REST_RESPONSE_SIZE_LIMIT, 10)
+  : 10000;
+
+if (isNaN(RESPONSE_SIZE_LIMIT) || RESPONSE_SIZE_LIMIT <= 0) {
+  throw new Error('REST_RESPONSE_SIZE_LIMIT must be a positive number');
 }
 const AUTH_BASIC_USERNAME = process.env.AUTH_BASIC_USERNAME;
 const AUTH_BASIC_PASSWORD = process.env.AUTH_BASIC_PASSWORD;
@@ -27,6 +36,35 @@ interface EndpointArgs {
   endpoint: string;
   body?: any;
   headers?: Record<string, string>;
+}
+
+interface ValidationResult {
+  isError: boolean;
+  messages: string[];
+  truncated?: {
+    originalSize: number;
+    returnedSize: number;
+    truncationPoint: number;
+    sizeLimit: number;
+  };
+}
+
+interface ResponseObject {
+  request: {
+    url: string;
+    method: string;
+    headers: Record<string, string | undefined>;
+    body: any;
+    authMethod: string;
+  };
+  response: {
+    statusCode: number;
+    statusText: string;
+    timing: string;
+    headers: Record<string, any>;
+    body: any;
+  };
+  validation: ValidationResult;
 }
 
 const isValidEndpointArgs = (args: any): args is EndpointArgs => {
@@ -145,7 +183,7 @@ class RestTester {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
         {
-          name: 'endpoint',
+          name: 'test_request',
           description: `Test a REST API endpoint and get detailed response information. 
 
 Base URL: ${process.env.REST_BASE_URL}
@@ -166,6 +204,7 @@ The tool automatically:
 - Normalizes endpoints (adds leading slash, removes trailing slashes)
 - Handles authentication header injection
 - Accepts any HTTP status code as valid
+- Limits response size to ${RESPONSE_SIZE_LIMIT} bytes (configurable via REST_RESPONSE_SIZE_LIMIT)
 - Returns detailed response information including:
   * Full URL called
   * Status code and text
@@ -211,7 +250,7 @@ Error Handling:
     }));
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      if (request.params.name !== 'endpoint') {
+      if (request.params.name !== 'test_request') {
         throw new McpError(
           ErrorCode.MethodNotFound,
           `Unknown tool: ${request.params.name}`
@@ -271,32 +310,62 @@ Error Handling:
         else if (hasBearerAuth()) authMethod = 'bearer';
         else if (hasApiKeyAuth()) authMethod = 'apikey';
 
+        // Prepare response object
+        const responseObj: ResponseObject = {
+          request: {
+            url: fullUrl,
+            method: config.method || 'GET',
+          headers: config.headers as Record<string, string | undefined>,
+            body: config.data,
+            authMethod
+          },
+          response: {
+            statusCode: response.status,
+            statusText: response.statusText,
+            timing: `${endTime - startTime}ms`,
+          headers: response.headers as Record<string, any>,
+            body: response.data,
+          },
+          validation: {
+            isError: response.status >= 400,
+            messages: response.status >= 400 ? 
+              [`Request failed with status ${response.status}`] : 
+              ['Request completed successfully']
+          }
+        };
+
+        // Check response size
+        const stringified = JSON.stringify(responseObj, null, 2);
+        const totalBytes = Buffer.from(stringified).length;
+
+        if (totalBytes > RESPONSE_SIZE_LIMIT) {
+          // Convert body to string if it isn't already
+          const bodyStr = typeof response.data === 'string' 
+            ? response.data 
+            : JSON.stringify(response.data);
+          
+          // Calculate how much we need to truncate
+          const currentSize = Buffer.from(bodyStr).length;
+          const targetSize = Math.max(0, currentSize - (totalBytes - RESPONSE_SIZE_LIMIT));
+          
+          // Create truncated response
+          responseObj.response.body = bodyStr.slice(0, targetSize);
+          responseObj.validation.messages.push(
+            `Response truncated: ${targetSize} of ${currentSize} bytes returned due to size limit (${RESPONSE_SIZE_LIMIT} bytes)`
+          );
+          responseObj.validation.truncated = {
+            originalSize: currentSize,
+            returnedSize: targetSize,
+            truncationPoint: targetSize,
+            sizeLimit: RESPONSE_SIZE_LIMIT
+          };
+        }
+
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify({
-                request: {
-                  url: fullUrl,
-                  method: config.method,
-                  headers: config.headers,
-                  body: config.data,
-                  authMethod
-                },
-                response: {
-                  statusCode: response.status,
-                  statusText: response.statusText,
-                  timing: `${endTime - startTime}ms`,
-                  headers: response.headers,
-                  body: response.data,
-                },
-                validation: {
-                  isError: response.status >= 400,
-                  messages: response.status >= 400 ? 
-                    [`Request failed with status ${response.status}`] : 
-                    ['Request completed successfully']
-                }
-              }, null, 2),
+              text: JSON.stringify(responseObj, null, 2),
             },
           ],
         };

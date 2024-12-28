@@ -52,7 +52,9 @@ Add to `C:\Users\<YourUsername>\AppData\Roaming\Code\User\globalStorage\saoudriz
         "AUTH_APIKEY_HEADER_NAME": "X-API-Key",
         "AUTH_APIKEY_VALUE": "your-api-key",
         // SSL Verification (enabled by default)
-        "REST_ENABLE_SSL_VERIFY": "false" // Set to false to disable SSL verification for self-signed certificates
+        "REST_ENABLE_SSL_VERIFY": "false", // Set to false to disable SSL verification for self-signed certificates
+        // Response Size Limit (optional, defaults to 10000 bytes)
+        "REST_RESPONSE_SIZE_LIMIT": "10000" // Maximum response size in bytes
       }
     }
   }
@@ -100,6 +102,12 @@ Note: Replace the environment variables with your actual values. Only configure 
 - Detailed response information including status, headers, and body
 - Custom header support
 - Request body handling for POST/PUT methods
+- Response Size Management:
+  - Automatic response size limiting (default: 10KB/10000 bytes)
+  - Configurable size limit via REST_RESPONSE_SIZE_LIMIT environment variable
+  - Clear truncation metadata when responses exceed limit
+  - Preserves response structure while only truncating body content
+
 - SSL Certificate Verification:
   - Enabled by default for secure operation
   - Can be disabled for self-signed certificates or development environments
@@ -115,30 +123,30 @@ Once installed and configured, you can use the REST API Tester through Cline to 
 
 ```typescript
 // Test a GET endpoint
-{
+use_mcp_tool('rest-api', 'test_request', {
   "method": "GET",
   "endpoint": "/users"
-}
+});
 
 // Test a POST endpoint with body
-{
+use_mcp_tool('rest-api', 'test_request', {
   "method": "POST",
   "endpoint": "/users",
   "body": {
     "name": "John Doe",
     "email": "john@example.com"
   }
-}
+});
 
 // Test with custom headers
-{
+use_mcp_tool('rest-api', 'test_request', {
   "method": "GET",
   "endpoint": "/products",
   "headers": {
     "Accept-Language": "en-US",
     "X-Custom-Header": "custom-value"
   }
-}
+});
 ```
 
 ## Development
