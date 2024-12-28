@@ -25,7 +25,53 @@ npx -y @smithery/cli install dkmaker-mcp-rest-api --client claude
 npm install -g dkmaker-mcp-rest-api
 ```
 
-2. Add the server to your MCP configuration:
+2. Configure Cline Custom Instructions:
+
+To ensure Cline understands how to effectively use this tool, add the following to your Cline custom instructions (Settings > Custom Instructions):
+
+```markdown
+# REST API Testing Instructions
+
+The `test_request` tool enables testing, debugging, and interacting with REST API endpoints. The tool provides comprehensive request/response information and handles authentication automatically.
+
+## When to Use
+
+- Testing specific API endpoints
+- Debugging API responses
+- Verifying API functionality
+- Checking response times
+- Validating request/response formats
+- Testing local development servers
+- Testing API sequences
+- Verifying error handling
+
+## Key Features
+
+- Supports GET, POST, PUT, DELETE methods
+- Handles authentication (Basic, Bearer, API Key)
+- Normalizes endpoints automatically
+- Provides detailed response information
+- Configurable SSL verification and response limits
+
+## Resources
+
+The following resources provide detailed documentation:
+
+- examples: Usage examples and common patterns
+- response-format: Response structure and fields
+- config: Configuration options and setup guide
+
+Access these resources to understand usage, response formats, and configuration options.
+
+## Important Notes
+
+- Review API implementation for expected behavior
+- Handle sensitive data appropriately
+- Consider rate limits and API constraints
+- Restart server after configuration changes
+```
+
+3. Add the server to your MCP configuration:
 
 While these instructions are for Cline, the server should work with any MCP implementation. Configure based on your operating system:
 
@@ -117,7 +163,7 @@ Note: Replace the environment variables with your actual values. Only configure 
   - Bearer Token Authentication
   - API Key Authentication (custom header)
 
-## Usage
+## Usage Examples
 
 Once installed and configured, you can use the REST API Tester through Cline to test your API endpoints:
 
