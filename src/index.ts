@@ -5,9 +5,12 @@ import {
   CallToolRequestSchema,
   ErrorCode,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 import axios, { AxiosInstance, AxiosRequestConfig, Method } from 'axios';
+import { VERSION, PACKAGE_NAME, SERVER_NAME } from './version.js';
 
 if (!process.env.REST_BASE_URL) {
   throw new Error('REST_BASE_URL environment variable is required');
@@ -49,12 +52,13 @@ class RestTester {
   private async setupServer() {
     this.server = new Server(
       {
-        name: 'rest-tester',
-        version: '0.1.0',
+        name: SERVER_NAME,
+        version: VERSION,
       },
       {
         capabilities: {
           tools: {},
+          resources: {},
         },
       }
     );
@@ -69,11 +73,71 @@ class RestTester {
     });
 
     this.setupToolHandlers();
+    this.setupResourceHandlers();
     
     this.server.onerror = (error) => console.error('[MCP Error]', error);
     process.on('SIGINT', async () => {
       await this.server.close();
       process.exit(0);
+    });
+  }
+
+  private setupResourceHandlers() {
+    this.server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+      resources: [
+        {
+          uri: `${SERVER_NAME}://examples`,
+          name: 'REST API Usage Examples',
+          description: 'Detailed examples of using the REST API testing tool',
+          mimeType: 'text/markdown'
+        },
+        {
+          uri: `${SERVER_NAME}://response-format`,
+          name: 'Response Format Documentation',
+          description: 'Documentation of the response format and structure',
+          mimeType: 'text/markdown'
+        }
+      ]
+    }));
+
+    this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+      const uriPattern = new RegExp(`^${SERVER_NAME}://(.+)$`);
+      const match = request.params.uri.match(uriPattern);
+      
+      if (!match) {
+        throw new McpError(
+          ErrorCode.InvalidRequest,
+          `Invalid resource URI format: ${request.params.uri}`
+        );
+      }
+
+      const resource = match[1];
+      const fs = await import('fs');
+      const path = await import('path');
+
+      try {
+        const url = await import('url');
+        const __filename = url.fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        
+        // In the built app, resources are in build/resources
+        // In development, they're in src/resources
+        const resourcePath = path.join(__dirname, 'resources', `${resource}.md`);
+        const content = await fs.promises.readFile(resourcePath, 'utf8');
+
+        return {
+          contents: [{
+            uri: request.params.uri,
+            mimeType: 'text/markdown',
+            text: content
+          }]
+        };
+      } catch (error) {
+        throw new McpError(
+          ErrorCode.InvalidRequest,
+          `Resource not found: ${resource}`
+        );
+      }
     });
   }
 

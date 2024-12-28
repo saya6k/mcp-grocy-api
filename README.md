@@ -36,7 +36,7 @@ Add to `C:\Users\<YourUsername>\AppData\Roaming\Code\User\globalStorage\saoudriz
 ```json
 {
   "mcpServers": {
-    "rest": {
+    "rest-api": {
       "command": "node",
       "args": [
         "C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/dkmaker-mcp-rest-api/build/index.js"
@@ -64,7 +64,7 @@ Add to `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude
 ```json
 {
   "mcpServers": {
-    "rest": {
+    "rest-api": {
       "command": "npx",
       "args": [
         "-y",

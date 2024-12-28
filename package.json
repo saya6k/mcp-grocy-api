@@ -9,11 +9,14 @@
   },
   "files": [
     "build",
+    "scripts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
+    "prebuild": "node scripts/build.js",
     "build": "tsc",
+    "postbuild": "node scripts/build.js",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
