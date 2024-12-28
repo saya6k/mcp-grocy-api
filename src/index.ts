@@ -354,29 +354,22 @@ See the config resource for all configuration options.
           }
         };
 
-        // Check response size
-        const stringified = JSON.stringify(responseObj, null, 2);
-        const totalBytes = Buffer.from(stringified).length;
+        // Check response body size independently
+        const bodyStr = typeof response.data === 'string' 
+          ? response.data 
+          : JSON.stringify(response.data);
+        const bodySize = Buffer.from(bodyStr).length;
 
-        if (totalBytes > RESPONSE_SIZE_LIMIT) {
-          // Convert body to string if it isn't already
-          const bodyStr = typeof response.data === 'string' 
-            ? response.data 
-            : JSON.stringify(response.data);
-          
-          // Calculate how much we need to truncate
-          const currentSize = Buffer.from(bodyStr).length;
-          const targetSize = Math.max(0, currentSize - (totalBytes - RESPONSE_SIZE_LIMIT));
-          
-          // Create truncated response
-          responseObj.response.body = bodyStr.slice(0, targetSize);
+        if (bodySize > RESPONSE_SIZE_LIMIT) {
+          // Simply truncate to the size limit
+          responseObj.response.body = bodyStr.slice(0, RESPONSE_SIZE_LIMIT);
           responseObj.validation.messages.push(
-            `Response truncated: ${targetSize} of ${currentSize} bytes returned due to size limit (${RESPONSE_SIZE_LIMIT} bytes)`
+            `Response truncated: ${RESPONSE_SIZE_LIMIT} of ${bodySize} bytes returned due to size limit (${RESPONSE_SIZE_LIMIT} bytes)`
           );
           responseObj.validation.truncated = {
-            originalSize: currentSize,
-            returnedSize: targetSize,
-            truncationPoint: targetSize,
+            originalSize: bodySize,
+            returnedSize: RESPONSE_SIZE_LIMIT,
+            truncationPoint: RESPONSE_SIZE_LIMIT,
             sizeLimit: RESPONSE_SIZE_LIMIT
           };
         }
