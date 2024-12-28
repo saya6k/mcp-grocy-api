@@ -19,28 +19,21 @@ The `test_request` tool enables testing, debugging, and interacting with REST AP
 - Handles authentication (Basic, Bearer, API Key)
 - Normalizes endpoints automatically
 - Provides detailed response information
-- Configurable SSL verification
+- Configurable SSL verification and response limits
 
-## Getting Started
+## Resources
 
-1. Check available examples:
-```typescript
-<access_mcp_resource>
-<server_name>rest-api</server_name>
-<uri>rest-api://examples</uri>
-</access_mcp_resource>
-```
+The following resources provide detailed documentation:
 
-2. Review response format:
-```typescript
-<access_mcp_resource>
-<server_name>rest-api</server_name>
-<uri>rest-api://response-format</uri>
-</access_mcp_resource>
-```
+- examples: Usage examples and common patterns
+- response-format: Response structure and fields
+- config: Configuration options and setup guide
+
+Access these resources to understand usage, response formats, and configuration options.
 
 ## Important Notes
 
 - Review API implementation for expected behavior
 - Handle sensitive data appropriately
 - Consider rate limits and API constraints
+- Restart server after configuration changes

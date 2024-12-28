@@ -72,6 +72,18 @@ const isValidEndpointArgs = (args: any): args is EndpointArgs => {
   if (!['GET', 'POST', 'PUT', 'DELETE'].includes(args.method)) return false;
   if (typeof args.endpoint !== 'string') return false;
   if (args.headers !== undefined && typeof args.headers !== 'object') return false;
+  
+  // Check if endpoint contains a full URL
+  const urlPattern = /^(https?:\/\/|www\.)/i;
+  if (urlPattern.test(args.endpoint)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid endpoint format. Do not include full URLs. Instead of "${args.endpoint}", use just the path (e.g. "/api/users"). ` +
+      `Your path will be resolved to: ${process.env.REST_BASE_URL}${args.endpoint.replace(/^\/+|\/+$/g, '')}. ` +
+      `To test a different base URL, update the REST_BASE_URL environment variable.`
+    );
+  }
+  
   return true;
 };
 
@@ -134,6 +146,12 @@ class RestTester {
           name: 'Response Format Documentation',
           description: 'Documentation of the response format and structure',
           mimeType: 'text/markdown'
+        },
+        {
+          uri: `${SERVER_NAME}://config`,
+          name: 'Configuration Documentation',
+          description: 'Documentation of all configuration options and how to use them',
+          mimeType: 'text/markdown'
         }
       ]
     }));
@@ -188,7 +206,7 @@ class RestTester {
 
 Base URL: ${process.env.REST_BASE_URL}
 
-SSL Verification: ${REST_ENABLE_SSL_VERIFY ? 'Enabled (default)' : 'Disabled (set REST_ENABLE_SSL_VERIFY=false to disable for self-signed certificates)'}
+SSL Verification: ${REST_ENABLE_SSL_VERIFY ? 'Enabled' : 'Disabled'} (see config resource for SSL settings)
 
 Authentication: ${
   hasBasicAuth() ? 
@@ -204,7 +222,7 @@ The tool automatically:
 - Normalizes endpoints (adds leading slash, removes trailing slashes)
 - Handles authentication header injection
 - Accepts any HTTP status code as valid
-- Limits response size to ${RESPONSE_SIZE_LIMIT} bytes (configurable via REST_RESPONSE_SIZE_LIMIT)
+- Limits response size to ${RESPONSE_SIZE_LIMIT} bytes (see config resource for size limit settings)
 - Returns detailed response information including:
   * Full URL called
   * Status code and text
@@ -218,6 +236,8 @@ Error Handling:
 - Network errors are caught and returned with descriptive messages
 - Invalid status codes are still returned with full response details
 - Authentication errors include the attempted auth method
+
+See the config resource for all configuration options.
 `,
           inputSchema: {
             type: 'object',
@@ -229,7 +249,7 @@ Error Handling:
               },
               endpoint: {
                 type: 'string',
-                description: 'Endpoint path (e.g. "/users"). Will be appended to base URL.',
+                description: `Endpoint path (e.g. "/users"). Do not include full URLs - only the path. Example: "/api/users" will resolve to "${process.env.REST_BASE_URL}/api/users"`,
               },
               body: {
                 type: 'object',
