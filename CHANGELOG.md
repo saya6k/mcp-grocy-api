@@ -1,3 +1,10 @@
+## [0.4.0](https://github.com/dkmaker/mcp-rest-api/compare/v0.3.0...v0.4.0) (2025-01-08)
+
+
+### Features
+
+* add custom header support ([9a48e0d](https://github.com/dkmaker/mcp-rest-api/commit/9a48e0d794a743f7a62c7cb73d6f5b1be9e44107))
+
 ## [0.3.0](https://github.com/dkmaker/mcp-rest-api/compare/v0.2.0...v0.3.0) (2024-12-28)
 
 
