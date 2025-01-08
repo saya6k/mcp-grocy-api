@@ -21,6 +21,20 @@ This document describes all available configuration options for the REST API tes
 - Values: Set to `false` to disable SSL verification for self-signed certificates
 - Usage: Disable when testing APIs with self-signed certificates in development environments
 
+## Custom Headers Configuration
+
+### Custom Headers (Optional)
+- Description: Add custom headers to all requests using environment variables
+- Pattern: `HEADER_<HeaderName>=<Value>` (prefix is case-insensitive)
+- Examples:
+  ```bash
+  HEADER_X-API-Version=2.0
+  header_Custom-Client=my-client
+  HeAdEr_Accept=application/json
+  ```
+- Usage: Headers are added to all requests. The header name after `HEADER_` preserves its exact case
+- Priority: Per-request headers > Authentication headers > Custom global headers
+
 ## Authentication Configuration
 
 The tool supports three authentication methods. Configure one based on your API's requirements.
@@ -71,6 +85,14 @@ REST_BASIC_PASSWORD=secret
 REST_BASE_URL=https://api.example.com
 REST_APIKEY_HEADER_NAME=X-API-Key
 REST_APIKEY_VALUE=your-api-key
+```
+
+### API with Custom Headers
+```bash
+REST_BASE_URL=https://api.example.com
+HEADER_X-API-Version=2.0
+HEADER_Custom-Client=my-client
+HEADER_Accept=application/json
 ```
 
 ## Changing Configuration

@@ -49,6 +49,54 @@ interface ValidationResult {
   };
 }
 
+// Function to sanitize headers by removing sensitive values and non-approved headers
+const sanitizeHeaders = (
+  headers: Record<string, any>,
+  isFromOptionalParams: boolean = false
+): Record<string, any> => {
+  const sanitized: Record<string, any> = {};
+  
+  for (const [key, value] of Object.entries(headers)) {
+    const lowerKey = key.toLowerCase();
+    
+    // Always include headers from optional parameters
+    if (isFromOptionalParams) {
+      sanitized[key] = value;
+      continue;
+    }
+    
+    // Handle authentication headers
+    if (
+      lowerKey === 'authorization' ||
+      (AUTH_APIKEY_HEADER_NAME && lowerKey === AUTH_APIKEY_HEADER_NAME.toLowerCase())
+    ) {
+      sanitized[key] = '[REDACTED]';
+      continue;
+    }
+    
+    // For headers from config/env
+    const customHeaders = getCustomHeaders();
+    if (key in customHeaders) {
+      // Show value only for headers that are in the approved list
+      const safeHeaders = new Set([
+        'accept',
+        'accept-language',
+        'content-type',
+        'user-agent',
+        'cache-control',
+        'if-match',
+        'if-none-match',
+        'if-modified-since',
+        'if-unmodified-since'
+      ]);
+      const lowerKey = key.toLowerCase();
+      sanitized[key] = safeHeaders.has(lowerKey) ? value : '[REDACTED]';
+    }
+  }
+  
+  return sanitized;
+};
+
 interface ResponseObject {
   request: {
     url: string;
@@ -67,11 +115,13 @@ interface ResponseObject {
   validation: ValidationResult;
 }
 
+const normalizeBaseUrl = (url: string): string => url.replace(/\/+$/, '');
+
 const isValidEndpointArgs = (args: any): args is EndpointArgs => {
   if (typeof args !== 'object' || args === null) return false;
   if (!['GET', 'POST', 'PUT', 'DELETE'].includes(args.method)) return false;
   if (typeof args.endpoint !== 'string') return false;
-  if (args.headers !== undefined && typeof args.headers !== 'object') return false;
+  if (args.headers !== undefined && (typeof args.headers !== 'object' || args.headers === null)) return false;
   
   // Check if endpoint contains a full URL
   const urlPattern = /^(https?:\/\/|www\.)/i;
@@ -90,6 +140,22 @@ const isValidEndpointArgs = (args: any): args is EndpointArgs => {
 const hasBasicAuth = () => AUTH_BASIC_USERNAME && AUTH_BASIC_PASSWORD;
 const hasBearerAuth = () => !!AUTH_BEARER;
 const hasApiKeyAuth = () => AUTH_APIKEY_HEADER_NAME && AUTH_APIKEY_VALUE;
+
+// Collect custom headers from environment variables
+const getCustomHeaders = (): Record<string, string> => {
+  const headers: Record<string, string> = {};
+  const headerPrefix = /^header_/i;  // Case-insensitive match for 'header_'
+  
+  for (const [key, value] of Object.entries(process.env)) {
+    if (headerPrefix.test(key) && value !== undefined) {
+      // Extract header name after the prefix, preserving case
+      const headerName = key.replace(headerPrefix, '');
+      headers[headerName] = value;
+    }
+  }
+  
+  return headers;
+};
 
 class RestTester {
   private server!: Server;
@@ -115,7 +181,7 @@ class RestTester {
 
     const https = await import('https');
     this.axiosInstance = axios.create({
-      baseURL: process.env.REST_BASE_URL,
+      baseURL: normalizeBaseUrl(process.env.REST_BASE_URL!),
       validateStatus: () => true, // Allow any status code
       httpsAgent: REST_ENABLE_SSL_VERIFY ? undefined : new https.Agent({ // Disable SSL verification only when explicitly set to false
         rejectUnauthorized: false
@@ -202,13 +268,7 @@ class RestTester {
       tools: [
         {
           name: 'test_request',
-          description: `Test a REST API endpoint and get detailed response information. 
-
-Base URL: ${process.env.REST_BASE_URL}
-
-SSL Verification: ${REST_ENABLE_SSL_VERIFY ? 'Enabled' : 'Disabled'} (see config resource for SSL settings)
-
-Authentication: ${
+          description: `Test a REST API endpoint and get detailed response information. Base URL: ${normalizeBaseUrl(process.env.REST_BASE_URL!)} | SSL Verification ${REST_ENABLE_SSL_VERIFY ? 'enabled' : 'disabled'} (see config resource for SSL settings) | Authentication: ${
   hasBasicAuth() ? 
     `Basic Auth with username: ${AUTH_BASIC_USERNAME}` :
   hasBearerAuth() ? 
@@ -216,28 +276,34 @@ Authentication: ${
   hasApiKeyAuth() ? 
     `API Key using header: ${AUTH_APIKEY_HEADER_NAME}` :
     'No authentication configured'
-}
-
-The tool automatically:
-- Normalizes endpoints (adds leading slash, removes trailing slashes)
-- Handles authentication header injection
-- Accepts any HTTP status code as valid
-- Limits response size to ${RESPONSE_SIZE_LIMIT} bytes (see config resource for size limit settings)
-- Returns detailed response information including:
-  * Full URL called
-  * Status code and text
-  * Response headers
-  * Response body
-  * Request details (method, headers, body)
-  * Response timing
-  * Validation messages
-
-Error Handling:
-- Network errors are caught and returned with descriptive messages
-- Invalid status codes are still returned with full response details
-- Authentication errors include the attempted auth method
-
-See the config resource for all configuration options.
+} | ${(() => {
+  const customHeaders = getCustomHeaders();
+  if (Object.keys(customHeaders).length === 0) {
+    return 'No custom headers defined (see config resource for headers)';
+  }
+  
+  // List of common headers that are safe to show values for
+  const safeHeaders = new Set([
+    'accept',
+    'accept-language',
+    'content-type',
+    'user-agent',
+    'cache-control',
+    'if-match',
+    'if-none-match',
+    'if-modified-since',
+    'if-unmodified-since'
+  ]);
+  
+  const headerList = Object.entries(customHeaders).map(([name, value]) => {
+    const lowerName = name.toLowerCase();
+    return safeHeaders.has(lowerName) ? 
+      `${name}(${value})` : 
+      name;
+  }).join(', ');
+  
+  return `Custom headers defined: ${headerList} (see config resource for headers)`;
+})()} | The tool automatically: - Normalizes endpoints (adds leading slash, removes trailing slashes) - Handles authentication header injection - Applies custom headers from HEADER_* environment variables - Accepts any HTTP status code as valid - Limits response size to ${RESPONSE_SIZE_LIMIT} bytes (see config resource for size limit settings) - Returns detailed response information including: * Full URL called * Status code and text * Response headers * Response body * Request details (method, headers, body) * Response timing * Validation messages | Error Handling: - Network errors are caught and returned with descriptive messages - Invalid status codes are still returned with full response details - Authentication errors include the attempted auth method | See the config resource for all configuration options, including header configuration.
 `,
           inputSchema: {
             type: 'object',
@@ -249,7 +315,7 @@ See the config resource for all configuration options.
               },
               endpoint: {
                 type: 'string',
-                description: `Endpoint path (e.g. "/users"). Do not include full URLs - only the path. Example: "/api/users" will resolve to "${process.env.REST_BASE_URL}/api/users"`,
+                description: `Endpoint path (e.g. "/users"). Do not include full URLs - only the path. Example: "/api/users" will resolve to "${normalizeBaseUrl(process.env.REST_BASE_URL!)}/api/users"`,
               },
               body: {
                 type: 'object',
@@ -257,11 +323,11 @@ See the config resource for all configuration options.
               },
               headers: {
                 type: 'object',
-                description: 'Optional request headers',
+                description: 'Optional request headers for one-time use. IMPORTANT: Do not use for sensitive data like API keys - those should be configured via environment variables. This parameter is intended for dynamic, non-sensitive headers that may be needed for specific requests.',
                 additionalProperties: {
-                  type: 'string',
-                },
-              },
+                  type: 'string'
+                }
+              }
             },
             required: ['method', 'endpoint'],
           },
@@ -291,7 +357,7 @@ See the config resource for all configuration options.
       const config: AxiosRequestConfig = {
           method: request.params.arguments.method as Method,
           url: normalizedEndpoint,
-          headers: request.params.arguments.headers || {},
+          headers: {},
         };
 
       // Add request body for POST/PUT
@@ -299,7 +365,17 @@ See the config resource for all configuration options.
         config.data = request.params.arguments.body;
       }
 
-      // Handle authentication based on environment variables
+      // Apply headers in order of priority (lowest to highest)
+      
+      // 1. Custom global headers (lowest priority)
+      const customHeaders = getCustomHeaders();
+      config.headers = {
+        ...customHeaders,
+        ...config.headers,
+        ...(request.params.arguments.headers || {}) // Request-specific headers (middle priority)
+      };
+
+      // 3. Authentication headers (highest priority)
       if (hasBasicAuth()) {
         const base64Credentials = Buffer.from(`${AUTH_BASIC_USERNAME}:${AUTH_BASIC_PASSWORD}`).toString('base64');
         config.headers = {
@@ -335,7 +411,10 @@ See the config resource for all configuration options.
           request: {
             url: fullUrl,
             method: config.method || 'GET',
-          headers: config.headers as Record<string, string | undefined>,
+            headers: {
+              ...sanitizeHeaders(config.headers as Record<string, string | undefined>, false),
+              ...sanitizeHeaders(request.params.arguments.headers || {}, true)
+            },
             body: config.data,
             authMethod
           },
@@ -343,7 +422,7 @@ See the config resource for all configuration options.
             statusCode: response.status,
             statusText: response.statusText,
             timing: `${endTime - startTime}ms`,
-          headers: response.headers as Record<string, any>,
+            headers: sanitizeHeaders(response.headers as Record<string, any>, false),
             body: response.data,
           },
           validation: {
@@ -395,7 +474,10 @@ See the config resource for all configuration options.
                   request: {
                     url: `${process.env.REST_BASE_URL}${normalizedEndpoint}`,
                     method: config.method,
-                    headers: config.headers,
+                    headers: {
+                      ...sanitizeHeaders(config.headers as Record<string, string | undefined>, false),
+                      ...sanitizeHeaders(request.params.arguments.headers || {}, true)
+                    },
                     body: config.data
                   }
                 }

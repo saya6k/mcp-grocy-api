@@ -100,7 +100,11 @@ Add to `C:\Users\<YourUsername>\AppData\Roaming\Code\User\globalStorage\saoudriz
         // SSL Verification (enabled by default)
         "REST_ENABLE_SSL_VERIFY": "false", // Set to false to disable SSL verification for self-signed certificates
         // Response Size Limit (optional, defaults to 10000 bytes)
-        "REST_RESPONSE_SIZE_LIMIT": "10000" // Maximum response size in bytes
+        "REST_RESPONSE_SIZE_LIMIT": "10000", // Maximum response size in bytes
+        // Custom Headers (optional)
+        "HEADER_X-API-Version": "2.0",
+        "HEADER_Custom-Client": "my-client",
+        "HEADER_Accept": "application/json"
       }
     }
   }
@@ -129,7 +133,11 @@ Add to `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude
         "AUTH_APIKEY_HEADER_NAME": "X-API-Key",
         "AUTH_APIKEY_VALUE": "your-api-key",
         // SSL Verification (enabled by default)
-        "REST_ENABLE_SSL_VERIFY": "false" // Set to false to disable SSL verification for self-signed certificates
+        "REST_ENABLE_SSL_VERIFY": "false", // Set to false to disable SSL verification for self-signed certificates
+        // Custom Headers (optional)
+        "HEADER_X-API-Version": "2.0",
+        "HEADER_Custom-Client": "my-client",
+        "HEADER_Accept": "application/json"
       }
     }
   }
@@ -146,7 +154,11 @@ Note: Replace the environment variables with your actual values. Only configure 
 - Test REST API endpoints with different HTTP methods
 - Support for GET, POST, PUT, and DELETE requests
 - Detailed response information including status, headers, and body
-- Custom header support
+- Custom Headers:
+  - Global headers via HEADER_* environment variables
+  - Case-insensitive prefix (HEADER_, header_, HeAdEr_)
+  - Case preservation for header names
+  - Priority-based application (per-request > auth > custom)
 - Request body handling for POST/PUT methods
 - Response Size Management:
   - Automatic response size limiting (default: 10KB/10000 bytes)
