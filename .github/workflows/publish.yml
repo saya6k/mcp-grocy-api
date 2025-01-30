@@ -32,7 +32,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           git-message: 'chore(release): {version}'
-          config-file-path: '.github/conventional-changelog.config.js'
+          config-file-path: '.github/conventional-changelog.config.cjs'
           tag-prefix: 'v'
           output-file: 'CHANGELOG.md'
           skip-version-file: false
