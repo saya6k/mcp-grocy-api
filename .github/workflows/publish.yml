@@ -32,11 +32,27 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           git-message: 'chore(release): {version}'
-          preset: 'conventionalcommits'
+          preset: |
+            {
+              "name": "custom",
+              "types": [
+                {"type": "feat", "section": "Features"},
+                {"type": "fix", "section": "Bug Fixes"},
+                {"type": "chore", "section": "Maintenance"},
+                {"type": "docs", "section": "Documentation"},
+                {"type": "style", "section": "Styling"},
+                {"type": "refactor", "section": "Code Refactoring"},
+                {"type": "perf", "section": "Performance"},
+                {"type": "test", "section": "Testing"},
+                {"type": "ci", "section": "CI/CD"},
+                {"type": "build", "section": "Build System"}
+              ]
+            }
           tag-prefix: 'v'
           output-file: 'CHANGELOG.md'
           skip-version-file: false
           skip-commit: false
+          skip-on-empty: false
           git-user-name: ${{ secrets.CHANGELOG_GIT_NAME }}
           git-user-email: ${{ secrets.CHANGELOG_GIT_EMAIL }}
 
