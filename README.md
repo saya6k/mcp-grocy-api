@@ -1,221 +1,275 @@
-# MCP REST API Tester
+# MCP Grocy API
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![NPM Package](https://img.shields.io/npm/v/dkmaker-mcp-rest-api.svg)](https://www.npmjs.com/package/dkmaker-mcp-rest-api)
-[![smithery badge](https://smithery.ai/badge/dkmaker-mcp-rest-api)](https://smithery.ai/server/dkmaker-mcp-rest-api)
 
-A TypeScript-based MCP server that enables testing of REST APIs through Cline. This tool allows you to test and interact with any REST API endpoints directly from your development environment.
+A TypeScript-based MCP server that enables interaction with Grocy's API. This tool allows you to manage your Grocy inventory, shopping lists, and more directly from your AI assistant.
 
-<a href="https://glama.ai/mcp/servers/izr2sp4rqo">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/izr2sp4rqo/badge?refresh=1234" />
-</a>
+## About Grocy
+
+[Grocy](https://grocy.info/) is a self-hosted groceries & household management solution for your home. This MCP server enables AI assistants to interact with your Grocy instance, allowing you to query stock levels, product information, manage shopping lists, and more.
 
 ## Installation
-
-### Installing via Smithery
-
-To install REST API Tester for Claude Desktop automatically via [Smithery](https://smithery.ai/server/dkmaker-mcp-rest-api):
-
-```bash
-npx -y @smithery/cli install dkmaker-mcp-rest-api --client claude
-```
 
 ### Installing Manually
 1. Install the package globally:
 ```bash
-npm install -g dkmaker-mcp-rest-api
+npm install -g mcp-grocy-api
 ```
 
-2. Configure Cline Custom Instructions:
+2. Configure your environment variables:
+Create a `.env` file with your Grocy configuration:
 
-To ensure Cline understands how to effectively use this tool, add the following to your Cline custom instructions (Settings > Custom Instructions):
+```
+GROCY_URL=https://your-grocy-instance.example.com
+GROCY_API_KEY=your-api-key-here
+GROCY_PORT=443
+GROCY_IGNORE_SSL=False
+```
+
+3. Configure your AI assistant's custom instructions:
+
+Add the following to your AI assistant's custom instructions:
 
 ```markdown
-# REST API Testing Instructions
+# Grocy API Integration for AI Assistants
 
-The `test_request` tool enables testing, debugging, and interacting with REST API endpoints. The tool provides comprehensive request/response information and handles authentication automatically.
+The `grocy-api` MCP server provides tools to interact with a Grocy inventory management system directly from an AI assistant.
+
+## Available Tools
+
+- `get_stock`: Get current stock information from your Grocy instance
+- `get_products`: Get product information with optional filtering
+- `get_product_by_id`: Get detailed information about a specific product
+- `get_locations`: Get all storage locations from your Grocy instance
+- `get_shopping_list`: Get your current shopping list items
+- `call_grocy_api`: Make custom API calls to your Grocy instance
 
 ## When to Use
 
-- Testing specific API endpoints
-- Debugging API responses
-- Verifying API functionality
-- Checking response times
-- Validating request/response formats
-- Testing local development servers
-- Testing API sequences
-- Verifying error handling
+- Check current stock levels of items
+- Query product information
+- View product details by ID
+- List storage locations
+- Manage shopping lists
+- Access any Grocy API endpoint for advanced operations
 
-## Key Features
+## Example Usage
 
-- Supports GET, POST, PUT, DELETE methods
-- Handles authentication (Basic, Bearer, API Key)
-- Normalizes endpoints automatically
-- Provides detailed response information
-- Configurable SSL verification and response limits
+To get current stock:
+```
+use_mcp_tool('grocy-api', 'get_stock', {})
+```
+
+To find products matching a search term:
+```
+use_mcp_tool('grocy-api', 'get_products', {"query": "pasta"})
+```
 
 ## Resources
 
 The following resources provide detailed documentation:
 
-- examples: Usage examples and common patterns
-- response-format: Response structure and fields
+- examples: Usage examples for all tools
+- response-format: Response structure details
 - config: Configuration options and setup guide
-
-Access these resources to understand usage, response formats, and configuration options.
-
-## Important Notes
-
-- Review API implementation for expected behavior
-- Handle sensitive data appropriately
-- Consider rate limits and API constraints
-- Restart server after configuration changes
 ```
 
 3. Add the server to your MCP configuration:
 
-While these instructions are for Cline, the server should work with any MCP implementation. Configure based on your operating system:
+Configure based on your operating system:
 
-### Windows
-⚠️ **IMPORTANT**: Due to a known issue with Windows path resolution ([issue #40](https://github.com/modelcontextprotocol/servers/issues/40)), you must use the full path instead of %APPDATA%.
+### MacOS and Linux
+Add to your configuration file:
 
-Add to `C:\Users\<YourUsername>\AppData\Roaming\Code\User\globalStorage\saoudrizwan.claude-dev\settings\cline_mcp_settings.json`:
 ```json
 {
   "mcpServers": {
-    "rest-api": {
+    "grocy-api": {
       "command": "node",
       "args": [
-        "C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/dkmaker-mcp-rest-api/build/index.js"
+        "/usr/local/lib/node_modules/mcp-grocy-api/build/index.js"
       ],
       "env": {
-        "REST_BASE_URL": "https://api.example.com",
-        // Basic Auth
-        "AUTH_BASIC_USERNAME": "your-username",
-        "AUTH_BASIC_PASSWORD": "your-password",
-        // OR Bearer Token
-        "AUTH_BEARER": "your-token",
-        // OR API Key
-        "AUTH_APIKEY_HEADER_NAME": "X-API-Key",
-        "AUTH_APIKEY_VALUE": "your-api-key",
-        // SSL Verification (enabled by default)
-        "REST_ENABLE_SSL_VERIFY": "false", // Set to false to disable SSL verification for self-signed certificates
-        // Response Size Limit (optional, defaults to 10000 bytes)
-        "REST_RESPONSE_SIZE_LIMIT": "10000", // Maximum response size in bytes
-        // Custom Headers (optional)
-        "HEADER_X-API-Version": "2.0",
-        "HEADER_Custom-Client": "my-client",
-        "HEADER_Accept": "application/json"
+        "GROCY_URL": "https://your-grocy-instance.example.com",
+        "GROCY_API_KEY": "your-api-key-here",
+        "GROCY_PORT": "443",
+        "GROCY_IGNORE_SSL": "False"
       }
     }
   }
 }
 ```
 
-### macOS
-Add to `~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json`:
+### Windows
+Add to your configuration file:
+
 ```json
 {
   "mcpServers": {
-    "rest-api": {
-      "command": "npx",
+    "grocy-api": {
+      "command": "node",
       "args": [
-        "-y",
-        "dkmaker-mcp-rest-api"
+        "C:/Users/<YourUsername>/AppData/Roaming/npm/node_modules/mcp-grocy-api/build/index.js"
       ],
       "env": {
-        "REST_BASE_URL": "https://api.example.com",
-        // Basic Auth
-        "AUTH_BASIC_USERNAME": "your-username",
-        "AUTH_BASIC_PASSWORD": "your-password",
-        // OR Bearer Token
-        "AUTH_BEARER": "your-token",
-        // OR API Key
-        "AUTH_APIKEY_HEADER_NAME": "X-API-Key",
-        "AUTH_APIKEY_VALUE": "your-api-key",
-        // SSL Verification (enabled by default)
-        "REST_ENABLE_SSL_VERIFY": "false", // Set to false to disable SSL verification for self-signed certificates
-        // Custom Headers (optional)
-        "HEADER_X-API-Version": "2.0",
-        "HEADER_Custom-Client": "my-client",
-        "HEADER_Accept": "application/json"
+        "GROCY_URL": "https://your-grocy-instance.example.com",
+        "GROCY_API_KEY": "your-api-key-here",
+        "GROCY_PORT": "443",
+        "GROCY_IGNORE_SSL": "False"
       }
     }
   }
+}```
 }
 ```
-
-Note: Replace the environment variables with your actual values. Only configure one authentication method at a time:
-1. Basic Authentication (username/password)
-2. Bearer Token (if Basic Auth is not configured)
-3. API Key (if neither Basic Auth nor Bearer Token is configured)
 
 ## Features
 
-- Test REST API endpoints with different HTTP methods
-- Support for GET, POST, PUT, and DELETE requests
-- Detailed response information including status, headers, and body
-- Custom Headers:
-  - Global headers via HEADER_* environment variables
-  - Case-insensitive prefix (HEADER_, header_, HeAdEr_)
-  - Case preservation for header names
-  - Priority-based application (per-request > auth > custom)
-- Request body handling for POST/PUT methods
-- Response Size Management:
-  - Automatic response size limiting (default: 10KB/10000 bytes)
-  - Configurable size limit via REST_RESPONSE_SIZE_LIMIT environment variable
-  - Clear truncation metadata when responses exceed limit
-  - Preserves response structure while only truncating body content
-
-- SSL Certificate Verification:
-  - Enabled by default for secure operation
-  - Can be disabled for self-signed certificates or development environments
-  - Control via REST_ENABLE_SSL_VERIFY environment variable
-- Multiple authentication methods:
-  - Basic Authentication (username/password)
-  - Bearer Token Authentication
-  - API Key Authentication (custom header)
+- Direct integration with Grocy's API for inventory management
+- Specialized tools for common Grocy operations:
+  - Get current stock information
+  - Search and retrieve product information
+  - Get product details by ID
+  - List storage locations
+  - View shopping lists
+- Advanced custom API access with the `call_grocy_api` tool
+- Detailed response information for debugging
+- Automatic handling of API authentication
+- Support for self-signed certificates with SSL verification toggle
+- Response size management to handle large data responses
 
 ## Usage Examples
 
-Once installed and configured, you can use the REST API Tester through Cline to test your API endpoints:
+Once installed and configured, you can use the Grocy API through your AI assistant to manage your inventory:
 
-```typescript
-// Test a GET endpoint
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "GET",
-  "endpoint": "/users"
-});
+### Get Current Stock Levels
 
-// Test a POST endpoint with body
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "POST",
-  "endpoint": "/users",
-  "body": {
-    "name": "John Doe",
-    "email": "john@example.com"
+```
+I'd like to see what's in my inventory currently.
+```
+
+Sample response:
+```json
+[
+  {
+    "product_id": 1,
+    "product_name": "Cookies",
+    "amount": 12,
+    "best_before_date": "2025-11-10",
+    "location": 4,
+    "amount_opened": 0,
+    "value": 33.96
+  },
+  {
+    "product_id": 2,
+    "product_name": "Chocolate",
+    "amount": 13,
+    "best_before_date": "2025-11-10",
+    "location": 4,
+    "amount_opened": 0,
+    "value": 30.99
   }
-});
+]
+```
 
-// Test with custom headers
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "GET",
-  "endpoint": "/products",
-  "headers": {
-    "Accept-Language": "en-US",
-    "X-Custom-Header": "custom-value"
+### Finding Products
+
+```
+Can you find all products with "chocolate" in the name?
+```
+
+Sample response:
+```json
+[
+  {
+    "id": 2,
+    "name": "Chocolate",
+    "description": null,
+    "product_group_id": 1,
+    "active": 1,
+    "location_id": 4,
+    "min_stock_amount": 8
+  },
+  {
+    "id": 24,
+    "name": "Milk Chocolate",
+    "description": null,
+    "product_group_id": 1,
+    "active": 1,
+    "location_id": 4,
+    "min_stock_amount": 0
+  },
+  {
+    "id": 25,
+    "name": "Dark Chocolate",
+    "description": null,
+    "product_group_id": 1,
+    "active": 1,
+    "location_id": 4,
+    "min_stock_amount": 0
   }
-});
+]
+```
+
+### Getting Product Details
+
+```
+Can you show me details about product ID 3?
+```
+
+Sample response:
+```json
+{
+  "id": 3,
+  "name": "Gummy bears",
+  "description": null,
+  "product_group_id": 1,
+  "active": 1,
+  "location_id": 4,
+  "shopping_location_id": null,
+  "qu_id_purchase": 3,
+  "qu_id_stock": 3,
+  "min_stock_amount": 8,
+  "default_best_before_days": 0
+}
 ```
 
 ## Development
 
-1. Clone the repository:
+### Building from Source
 ```bash
-git clone https://github.com/zenturacp/mcp-rest-api.git
-cd mcp-rest-api
+# Clone the repository
+git clone https://github.com/yourusername/mcp-grocy-api.git
+cd mcp-grocy-api
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Install globally
+npm install -g .
 ```
 
-2. Install dependencies:
+### Environment Variables
+Create a `.env` file in the project root with the required variables:
+
+```
+GROCY_URL=https://your-grocy-instance.example.com
+GROCY_API_KEY=your-api-key-here
+GROCY_PORT=443
+GROCY_IGNORE_SSL=False
+GROCY_RESPONSE_SIZE_LIMIT=10000
+```
+
+## License
+
+MIT
+
+## Acknowledgements
+
+- [Grocy](https://grocy.info/) - The self-hosted groceries & household management solution
+- [Model Context Protocol](https://modelcontextprotocol.ai/) - For providing the framework for AI assistants to interact with tools
 ```bash
 npm install
 ```

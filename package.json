@@ -1,11 +1,11 @@
 {
-  "name": "dkmaker-mcp-rest-api",
-  "version": "0.4.0",
-  "description": "A generic REST API tester for testing HTTP endpoints",
+  "name": "mcp-grocy-api",
+  "version": "0.1.0",
+  "description": "An MCP server for interacting with Grocy API",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "dkmaker-mcp-rest-api": "./build/index.js"
+    "mcp-grocy-api": "./build/index.js"
   },
   "files": [
     "build",
@@ -31,23 +31,23 @@
   },
   "keywords": [
     "mcp",
-    "rest",
+    "grocy",
     "api",
-    "http",
-    "testing",
-    "cline",
+    "inventory",
+    "food-management",
+    "stock",
     "development",
     "typescript"
   ],
-  "author": "zenturacp",
+  "author": "saya6k",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dkmaker/mcp-rest-api.git"
+    "url": "git+https://github.com/saya6k/mcp-grocy-api.git"
   },
   "bugs": {
-    "url": "https://github.com/dkmaker/mcp-rest-api/issues"
+    "url": "https://github.com/saya6k/mcp-grocy-api/issues"
   },
-  "homepage": "https://github.com/dkmaker/mcp-rest-api#readme",
+  "homepage": "https://github.com/saya6k/mcp-grocy-api#readme",
   "engines": {
     "node": ">=18.0.0"
   }

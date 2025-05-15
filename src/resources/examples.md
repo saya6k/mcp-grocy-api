@@ -1,80 +1,115 @@
-# REST API Testing Examples
+# Grocy API Usage Examples
 
-⚠️ IMPORTANT: Only provide the endpoint path - do not include full URLs. Your path will be automatically resolved to the full URL.
+This document provides examples of using the MCP Grocy API tool to interact with your Grocy instance.
 
-For example, if the base URL is `http://localhost:3000`:
-✅ Correct: `"/api/users"` → Resolves to: `http://localhost:3000/api/users`
-❌ Incorrect: `"http://localhost:3000/api/users"` or `"www.example.com/api/users"`
+## Working with Stock
 
-## Basic GET Request
+### Get All Stock Items
 ```typescript
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "GET",
-  "endpoint": "/users"  // Will be appended to REST_BASE_URL
+use_mcp_tool('grocy-api', 'get_stock', {});
+```
+
+### Get Stock with Full Details
+```typescript
+use_mcp_tool('grocy-api', 'get_stock', {
+  "includeDetails": true
 });
 ```
 
-## GET with Query Parameters
+## Working with Products
+
+### Get All Products
 ```typescript
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "GET",
-  "endpoint": "/users?role=admin&status=active"
+use_mcp_tool('grocy-api', 'get_products', {});
+```
+
+### Search Products by Name
+```typescript
+use_mcp_tool('grocy-api', 'get_products', {
+  "query": "Chocolate"
 });
 ```
 
-## POST Request with Body
+### Get Product Details by ID
 ```typescript
-use_mcp_tool('rest-api', 'test_request', {
+use_mcp_tool('grocy-api', 'get_product_by_id', {
+  "productId": 2  // ID of the product to retrieve details for
+});
+```
+
+## Locations and Shopping Lists
+
+### Get All Storage Locations
+```typescript
+use_mcp_tool('grocy-api', 'get_locations', {});
+```
+
+### Get Shopping List Items
+```typescript
+use_mcp_tool('grocy-api', 'get_shopping_list', {});
+```
+
+## Advanced Usage: Custom API Calls
+
+For more specific needs, you can use the `call_grocy_api` tool to make custom API calls to your Grocy instance.
+
+### GET Request Examples
+
+#### Get Quantity Units
+```typescript
+use_mcp_tool('grocy-api', 'call_grocy_api', {
+  "endpoint": "/api/objects/quantity_units"
+});
+```
+
+#### Get Product Groups
+```typescript
+use_mcp_tool('grocy-api', 'call_grocy_api', {
+  "endpoint": "/api/objects/product_groups"
+});
+```
+
+### POST Request Example: Add Product to Shopping List
+```typescript
+use_mcp_tool('grocy-api', 'call_grocy_api', {
   "method": "POST",
-  "endpoint": "/users",
+  "endpoint": "/api/objects/shopping_list",
   "body": {
-    "name": "John Doe",
-    "email": "john@example.com"
+    "product_id": 3,
+    "amount": 2,
+    "shopping_list_id": 1
   }
 });
 ```
 
-## Request with Custom Headers
+### PUT Request Example: Update Product Details
 ```typescript
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "GET",
-  "endpoint": "/secure-resource",
-  "headers": {
-    "Custom-Header": "value",
-    "Another-Header": "another-value"
-  }
-});
-```
-
-## PUT Request Example
-```typescript
-use_mcp_tool('rest-api', 'test_request', {
+use_mcp_tool('grocy-api', 'call_grocy_api', {
   "method": "PUT",
-  "endpoint": "/users/123",
+  "endpoint": "/api/objects/products/3",
   "body": {
-    "name": "Updated Name",
-    "status": "inactive"
+    "min_stock_amount": 5
   }
 });
 ```
 
-## DELETE Request Example
+### Using Query Parameters
 ```typescript
-use_mcp_tool('rest-api', 'test_request', {
-  "method": "DELETE",
-  "endpoint": "/users/123"
+use_mcp_tool('grocy-api', 'call_grocy_api', {
+  "endpoint": "/api/stock/products/by-barcode",
+  "params": {
+    "barcode": "123456789"
+  }
 });
 ```
 
-## Changing Base URL
-If you need to test against a different base URL, update the base URL configuration rather than including the full URL in the endpoint parameter.
+## Response Format
 
-Example:
-```bash
-# Instead of this:
-❌ "endpoint": "https://api.example.com/users"  # Wrong - don't include the full URL
-
-# Do this:
-# 1. Update the base URL configuration to: https://api.example.com
-# 2. Then use just the path:
-✅ "endpoint": "/users"  # This will resolve to: https://api.example.com/users
+All responses include detailed information about the request and response, including:
+- Full URL called
+- HTTP method used
+- Request headers and body
+- Response status code
+- Response headers and body
+- Response timing
+- Validation information
