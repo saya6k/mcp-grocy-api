@@ -16,7 +16,41 @@ import { createRequire } from 'module';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
-const packageJson = require('../package.json');
+const rootDir = path.join(__dirname, '..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+
+console.log('🧪 Preparing test build...');
+
+// Create resources directory if it doesn't exist
+const resourcesDir = path.join(rootDir, 'resources');
+if (!fs.existsSync(resourcesDir)) {
+  fs.mkdirSync(resourcesDir, { recursive: true });
+  console.log('📁 Created resources directory');
+}
+
+// Copy markdown files to resources directory
+try {
+  const files = fs.readdirSync(rootDir);
+  const markdownFiles = files.filter(file => file.endsWith('.md'));
+  markdownFiles.forEach(file => {
+    fs.copyFileSync(path.join(rootDir, file), path.join(resourcesDir, file));
+  });
+  console.log('📝 Copied markdown resources');
+} catch (error) {
+  console.error('Error copying markdown files:', error);
+}
+
+// Generate version.ts file
+const versionTsContent = `// Generated version file for test build
+export const VERSION = '${packageJson.version}';
+export const NAME = '${packageJson.name}';
+export const DESCRIPTION = '${packageJson.description || ""}';
+`;
+
+fs.writeFileSync(path.join(rootDir, 'src', 'version.ts'), versionTsContent);
+console.log('📝 Generated version.ts with package values');
+
+console.log('✅ Test build preparation complete');
 
 console.log('🔍 Starting test build process...');
 
@@ -49,7 +83,6 @@ const requiredFiles = [
   'build/resources'
 ];
 
-const rootDir = path.dirname(__dirname);
 const missingFiles = requiredFiles.filter(file => !fs.existsSync(path.join(rootDir, file)));
 
 if (missingFiles.length > 0) {

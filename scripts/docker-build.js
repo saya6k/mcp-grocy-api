@@ -1,46 +1,43 @@
 #!/usr/bin/env node
 
-/**
- * Docker Build Script
- * 
- * A simplified version of build.js for use in Docker build environments.
- * This skips unnecessary checks and prepares for TypeScript compilation.
- */
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.dirname(__dirname);
+const rootDir = path.join(__dirname, '..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
 
 console.log('🐳 Preparing build for Docker environment...');
 
-// Create resources directory if it doesn't exist
-const resourcesDir = path.join(rootDir, 'build', 'resources');
+// Create resources directory
+const resourcesDir = path.join(rootDir, 'resources');
 if (!fs.existsSync(resourcesDir)) {
   fs.mkdirSync(resourcesDir, { recursive: true });
   console.log('📁 Created resources directory');
 }
 
-// Copy markdown resources
-const srcResourcesDir = path.join(rootDir, 'src', 'resources');
-if (fs.existsSync(srcResourcesDir)) {
-  try {
-    const files = fs.readdirSync(srcResourcesDir);
-    files.forEach(file => {
-      if (file.endsWith('.md')) {
-        fs.copyFileSync(
-          path.join(srcResourcesDir, file),
-          path.join(resourcesDir, file)
-        );
-      }
-    });
-    console.log('📝 Copied markdown resources');
-  } catch (err) {
-    console.error('⚠️ Error copying resources:', err);
-  }
+// Copy markdown files to resources directory
+try {
+  const files = fs.readdirSync(rootDir);
+  const markdownFiles = files.filter(file => file.endsWith('.md'));
+  markdownFiles.forEach(file => {
+    fs.copyFileSync(path.join(rootDir, file), path.join(resourcesDir, file));
+  });
+  console.log('📝 Copied markdown resources');
+} catch (error) {
+  console.error('Error copying markdown files:', error);
 }
+
+// Generate version.ts file
+const versionTsContent = `// Generated version file for Docker build
+export const VERSION = '${packageJson.version}';
+export const NAME = '${packageJson.name}';
+export const DESCRIPTION = '${packageJson.description || ""}';
+`;
+
+fs.writeFileSync(path.join(rootDir, 'src', 'version.ts'), versionTsContent);
+console.log('📝 Generated version.ts with package values');
 
 console.log('✅ Docker build preparation complete');
