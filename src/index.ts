@@ -180,11 +180,14 @@ class GrocyApiServer {
       {
         name: SERVER_NAME,
         version: VERSION,
+        serverUrl: "https://github.com/saya6k/mcp-grocy-api",
+        documentationUrl: "https://github.com/saya6k/mcp-grocy-api/blob/main/README.md"
       },
       {
         capabilities: {
-          tools: {},
-          resources: {},
+          tools: true,
+          resources: true,
+          prompts: false
         },
       }
     );
