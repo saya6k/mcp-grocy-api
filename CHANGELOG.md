@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.8...v1.0.9) (2025-05-16)
+
+
+### Bug Fixes
+
+* configure server capabilities as empty objects for MCP compatibility ([790f352](https://github.com/saya6k/mcp-grocy-api/commit/790f35233bac8ba15f19a6aa62eb8d991144d266))
+
 ## [1.0.8](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.7...v1.0.8) (2025-05-16)
 
 
