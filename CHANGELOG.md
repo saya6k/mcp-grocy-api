@@ -1,3 +1,11 @@
+## [1.0.8](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.7...v1.0.8) (2025-05-16)
+
+
+### Bug Fixes
+
+* correct capability types in server initialization to fix TypeScript errors ([19e6c79](https://github.com/saya6k/mcp-grocy-api/commit/19e6c79a195b5781f87d91ba809d39514553191e))
+* update server initialization to strictly follow MCP specification ([e632531](https://github.com/saya6k/mcp-grocy-api/commit/e632531d0bbe470fac319820adf56838be52e1ad))
+
 ## [1.0.7](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.6...v1.0.7) (2025-05-16)
 
 
