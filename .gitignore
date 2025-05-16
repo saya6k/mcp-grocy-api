@@ -1,6 +1,34 @@
 node_modules/
 build/
 src/version.ts
+
+# Docker test builds
+mcp-grocy-api:test
+
+# Local environment variables
 .env
+*.local
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# OS-generated files
 .DS_Store
+Thumbs.db
+
+# Log files
 *.log
+npm-debug.log*
+yarn-error.log*
+.npm/_logs/
+
+# Test coverage
+coverage/
+
+# Local configuration overrides
+mcp-config.local.json
+
+# Temporary files
+*.tmp
+.cache/

@@ -1,0 +1,7 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Explicitly declare files that should have specific line endings and attributes
+*.sh text eol=lf
+test-build.sh text eol=lf executable
+scripts/*.js text eol=lf
