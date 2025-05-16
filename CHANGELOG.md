@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.3...v1.0.4) (2025-05-16)
+
+
+### Bug Fixes
+
+* simplified schema for open_product tool to avoid unsupported anyOf constraint ([d6e65ce](https://github.com/saya6k/mcp-grocy-api/commit/d6e65cecd1c0790121821be97e24350dead924b9))
+
 ## [1.0.3](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.2...v1.0.3) (2025-05-16)
 
 
