@@ -210,23 +210,26 @@ jobs:
         if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'true'
         working-directory: hassio-addons
         run: |
-          # Initialize the submodule
-          git submodule init
-          git submodule update
+          # More robust submodule update that doesn't fail if there are issues with other submodules
+          git config -f .gitmodules --get-regexp '^submodule\.mcp-grocy-api\.path$' || true
           
-          # Update the mcp-grocy-api submodule
-          cd mcp-grocy-api
-          git fetch
-          git checkout main
-          git pull
-          
-          # Go back to the hassio-addons root directory
-          cd ..
+          # Check if the directory exists and is a git repository
+          if [ -d "mcp-grocy-api" ] && [ -d "mcp-grocy-api/.git" ]; then
+            cd mcp-grocy-api
+            git fetch
+            git checkout main
+            git pull
+            cd ..
+          else
+            # If directory doesn't exist or isn't a git repo, initialize just this submodule
+            git submodule init mcp-grocy-api
+            git submodule update --remote mcp-grocy-api
+          fi
           
           # Commit the updated submodule
           git add mcp-grocy-api
-          git commit -m "chore: update mcp-grocy-api submodule to latest version"
-          git push
+          git commit -m "chore: update mcp-grocy-api submodule to latest version" || echo "No changes to commit"
+          git push || echo "No changes to push"
       
       - name: Check and update gitignore
         if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'false'
@@ -247,6 +250,8 @@ jobs:
         run: |
           # Add the new submodule with force flag
           git submodule add -f https://github.com/saya6k/mcp-grocy-api.git mcp-grocy-api
+          
+          # Directly initialize just this submodule without trying to init others
           cd mcp-grocy-api
           git checkout main
           cd ..
