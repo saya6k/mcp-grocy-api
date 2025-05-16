@@ -226,12 +226,25 @@ jobs:
           git commit -m "chore: update mcp-grocy-api submodule to latest version"
           git push
       
+      - name: Check and update gitignore
+        if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'false'
+        working-directory: hassio-addons
+        run: |
+          # Check if mcp-grocy-api is in .gitignore
+          if grep -q "mcp-grocy-api" .gitignore 2>/dev/null; then
+            # Remove or comment out the line from .gitignore
+            sed -i 's/mcp-grocy-api/#mcp-grocy-api - submodule now/g' .gitignore
+            git add .gitignore
+            git commit -m "chore: update .gitignore to allow mcp-grocy-api submodule"
+            git push
+          fi
+      
       - name: Add new submodule
         if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'false'
         working-directory: hassio-addons
         run: |
-          # Add the new submodule
-          git submodule add https://github.com/saya6k/mcp-grocy-api.git mcp-grocy-api
+          # Add the new submodule with force flag
+          git submodule add -f https://github.com/saya6k/mcp-grocy-api.git mcp-grocy-api
           cd mcp-grocy-api
           git checkout main
           cd ..
