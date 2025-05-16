@@ -154,12 +154,19 @@ jobs:
           name: build
           path: build/
       
+      - name: Verify npm token
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          npm whoami || echo "npm token verification failed"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        run: npx semantic-release --debug
 
   # Note: We've removed the separate publish job since semantic-release handles npm publishing
   # Semantic Release will handle both versioning and npm publishing in a single step
