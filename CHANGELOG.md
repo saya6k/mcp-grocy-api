@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.6...v1.0.7) (2025-05-16)
+
+
+### Bug Fixes
+
+* resolve npm packaging and CI/CD issues ([bbeb2e7](https://github.com/saya6k/mcp-grocy-api/commit/bbeb2e73c9f8bbcc2b624b0b9d3a2320ec614ed4))
+
 ## [1.0.6](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.5...v1.0.6) (2025-05-16)
 
 
