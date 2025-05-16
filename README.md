@@ -30,5 +30,3 @@ For Home Assistant addon specific documentation, see [DOCS.md](DOCS.md).
 ## API Reference
 
 For a complete list of all available API endpoints and examples, see [API Examples Documentation](./src/resources/examples.md).
-
-// ...existing code...
