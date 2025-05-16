@@ -185,9 +185,9 @@ class GrocyApiServer {
       },
       {
         capabilities: {
-          tools: true,
-          resources: true,
-          prompts: false
+          tools: {}, // Empty object instead of boolean
+          resources: {}, // Empty object instead of boolean
+          prompts: {} // Empty object instead of boolean
         },
       }
     );
