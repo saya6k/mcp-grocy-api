@@ -40,5 +40,5 @@ jobs:
           output-file: 'CHANGELOG.md'
           release-count: '5'
           version-path: 'version'
-          config-file-path: '.github/workflows/conventional-changelog.config.js'
+          config-file-path: '.github/conventional-changelog.config.cjs'
           skip-on-empty: false

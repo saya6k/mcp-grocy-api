@@ -2,56 +2,32 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ '**' ]
   pull_request:
     branches: [ main ]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        arch: [amd64, arm64]
-        
-    # Use GitHub's arm64 runners to avoid QEMU issues when cross-building NodeJS 18+
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Build project
-        run: npm run build
-        
-      - name: Run tests
-        run: npm test
-        
-  build-docker:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        arch: [amd64, arm64]
+    runs-on: ubuntu-latest
     
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+        
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
       
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        
-      - name: Build Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/${{ matrix.arch }}
-          push: false
-          tags: mcp-grocy-api:latest
+    - name: Build
+      run: npm run build
+      
+    - name: Test
+      run: npm test
