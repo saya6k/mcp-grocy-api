@@ -2,6 +2,9 @@ node_modules/
 build/
 src/version.ts
 
+# Automatically generated files
+/CHANGELOG.md
+
 # Docker test builds
 mcp-grocy-api:test
 
