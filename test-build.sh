@@ -21,11 +21,16 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the TypeScript compiler
-echo -e "${YELLOW}Compiling TypeScript...${NC}"
-npx tsc
-if [ $? -ne 0 ]; then
-  echo -e "${RED}TypeScript compilation failed${NC}"
-  exit 1
+# Skip TypeScript compilation if already built
+if [ ! -d "build" ] || [ -z "$(ls -A build 2>/dev/null)" ]; then
+  echo -e "${YELLOW}Compiling TypeScript...${NC}"
+  npx tsc
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}TypeScript compilation failed${NC}"
+    exit 1
+  fi
+else
+  echo -e "${YELLOW}Build directory already exists, skipping TypeScript compilation...${NC}"
 fi
 
 echo -e "${GREEN}Test build completed successfully!${NC}"
