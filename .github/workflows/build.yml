@@ -30,4 +30,6 @@ jobs:
       run: npm run build
       
     - name: Test
-      run: npm test
+      run: |
+        export NODE_OPTIONS=--experimental-vm-modules
+        npm test
