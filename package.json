@@ -1,6 +1,6 @@
 {
   "name": "mcp-grocy-api",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A Grocy API integration for MCP",
   "license": "MIT",
   "type": "module",

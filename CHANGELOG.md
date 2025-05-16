@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.4...v1.0.5) (2025-05-16)
+
+
+### Bug Fixes
+
+* removed duplicate case statements for open_product and get_recipe_fulfillment tools ([a745f2d](https://github.com/saya6k/mcp-grocy-api/commit/a745f2d6e3dc5dc8bfcc28c4e9b632f01fc580f8))
+
 ## [1.0.4](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.3...v1.0.4) (2025-05-16)
 
 
