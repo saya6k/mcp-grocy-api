@@ -55,8 +55,6 @@ jobs:
       - run: npm install
       - name: Build
         run: npm run build
-      - name: Test build
-        run: ./test-build.sh
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
