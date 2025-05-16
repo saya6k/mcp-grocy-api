@@ -1,3 +1,26 @@
+# 1.0.0 (2025-05-16)
+
+
+### Bug Fixes
+
+* **ci:** correct workflow configuration and Docker build issues ([2ce9692](https://github.com/saya6k/mcp-grocy-api/commit/2ce96920612e0c22fca104c7dc79e88bcdd1ea0b))
+* **ci:** replace conventional-changelog with semantic-release ([9412a4b](https://github.com/saya6k/mcp-grocy-api/commit/9412a4bd5999fba409738263aca2f9e95a7a395f))
+* correct response truncation to return first N bytes ([ce34649](https://github.com/saya6k/mcp-grocy-api/commit/ce34649c4d8e6bc6d740e8f3fbc6e3df517e0eec))
+* improve Docker build and test workflow ([346b25b](https://github.com/saya6k/mcp-grocy-api/commit/346b25ba9b1bec053b802b54f9272b527b319fcb))
+* replace npm ci with npm install in pipeline.yml ([d07ee07](https://github.com/saya6k/mcp-grocy-api/commit/d07ee078e90edb580cafa61b00a7e732524db11d))
+* resolve Docker build and GitHub Actions workflow issues ([1d0cfc8](https://github.com/saya6k/mcp-grocy-api/commit/1d0cfc823d567ef22eead3709e810cc0b663c0d9))
+* typo in test-build.sh ([b69c7f1](https://github.com/saya6k/mcp-grocy-api/commit/b69c7f1c0720e1d25bad8f35ea9cf0517a29d84b))
+* update Docker build process by using --ignore-scripts flag ([2fc7fdf](https://github.com/saya6k/mcp-grocy-api/commit/2fc7fdf60e08c0628b1f47c5e3a4897e13519090))
+* use .cjs extension for conventional changelog config ([9f7cda3](https://github.com/saya6k/mcp-grocy-api/commit/9f7cda3b656c2abadee131350201d4464e046fae))
+
+
+### Features
+
+* add config documentation and improve URL resolution examples ([8c6100f](https://github.com/saya6k/mcp-grocy-api/commit/8c6100f47777605a0571edbd161ffd20fc48b640))
+* add custom header support ([9a48e0d](https://github.com/saya6k/mcp-grocy-api/commit/9a48e0d794a743f7a62c7cb73d6f5b1be9e44107))
+* add MCP resources for documentation ([a20cf35](https://github.com/saya6k/mcp-grocy-api/commit/a20cf352e9731841a8d7e833007a96bdd1a0c390))
+* **ssl:** add SSL verification control with secure defaults ([0fdbe84](https://github.com/saya6k/mcp-grocy-api/commit/0fdbe844dd4ce8b79f38a33df323a29e28253724))
+
 ##  (2025-05-16)
 
 * fix: correct response truncation to return first N bytes ([ce34649](https://github.com/saya6k/mcp-grocy-api/commit/ce34649))
@@ -37,6 +60,3 @@
 * docs: add MCP server badge and bump version to 0.1.3 ([4d0c864](https://github.com/saya6k/mcp-grocy-api/commit/4d0c864))
 * docs: add NPM package badge and link to README ([6bca45b](https://github.com/saya6k/mcp-grocy-api/commit/6bca45b))
 * refactor: rename endpoint tool to test_request and improve build process ([dfd8e7e](https://github.com/saya6k/mcp-grocy-api/commit/dfd8e7e))
-
-
-
