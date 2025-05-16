@@ -1320,8 +1320,6 @@ class GrocyApiServer {
           
           return await this.handleGrocyApiCall(`/stock/products/${priceHistoryProductId}/price-history`, 'Get product price history', {
           });
-        case 'open_product':
-          return await this.handleOpenProduct(request);
         case 'get_stock_by_location':
           const { locationId: stockLocationId } = request.params.arguments || {};
           if (!stockLocationId) {
@@ -1391,14 +1389,6 @@ class GrocyApiServer {
                 }
               }
             }
-          });
-        case 'get_recipe_fulfillment':
-          const { recipeId: fulfillmentRecipeId, servings: fulfillmentServings = 1 } = request.params.arguments || {};
-          if (!fulfillmentRecipeId) {
-            throw new McpError(ErrorCode.InvalidParams, 'recipeId is required');
-          }
-          
-          return await this.handleGrocyApiCall(`/recipes/${fulfillmentRecipeId}/fulfillment?servings=${fulfillmentServings}`, 'Get recipe fulfillment', {
           });
         case 'remove_shopping_list_item':
           const { shoppingListItemId } = request.params.arguments || {};
