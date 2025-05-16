@@ -188,26 +188,55 @@ jobs:
           token: ${{ secrets.HASSIO_ADDONS_TOKEN }}
           path: hassio-addons
       
-      - name: Update submodule
+      - name: Setup Git configuration
         working-directory: hassio-addons
         run: |
-          # Initialize the submodule if not already done
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Check if submodule exists
+        id: check-submodule
+        working-directory: hassio-addons
+        run: |
+          if grep -q "mcp-grocy-api" .gitmodules 2>/dev/null; then
+            echo "SUBMODULE_EXISTS=true" >> $GITHUB_OUTPUT
+          else
+            echo "SUBMODULE_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Update existing submodule
+        if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'true'
+        working-directory: hassio-addons
+        run: |
+          # Initialize the submodule
           git submodule init
+          git submodule update
           
-          # Update the grocy-api submodule (adjust path as needed)
-          cd mcp-grocy-api # Adjust this to the correct subdirectory name where the submodule is located
+          # Update the mcp-grocy-api submodule
+          cd mcp-grocy-api
           git fetch
-          git checkout main # Or you might want to checkout the specific tag from the release
+          git checkout main
           git pull
           
           # Go back to the hassio-addons root directory
           cd ..
           
-          # Set Git identity for the commit
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          
           # Commit the updated submodule
-          git add grocy-api
+          git add mcp-grocy-api
           git commit -m "chore: update mcp-grocy-api submodule to latest version"
+          git push
+      
+      - name: Add new submodule
+        if: steps.check-submodule.outputs.SUBMODULE_EXISTS == 'false'
+        working-directory: hassio-addons
+        run: |
+          # Add the new submodule
+          git submodule add https://github.com/saya6k/mcp-grocy-api.git mcp-grocy-api
+          cd mcp-grocy-api
+          git checkout main
+          cd ..
+          
+          # Commit the new submodule
+          git add .gitmodules mcp-grocy-api
+          git commit -m "chore: add mcp-grocy-api submodule"
           git push
