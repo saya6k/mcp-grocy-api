@@ -157,6 +157,8 @@ jobs:
       - name: Verify npm token
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
           npm whoami || echo "npm token verification failed"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
