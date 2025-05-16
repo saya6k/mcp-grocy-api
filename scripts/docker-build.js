@@ -33,8 +33,7 @@ try {
 // Generate version.ts file
 const versionTsContent = `// Generated version file for Docker build
 export const VERSION = '${packageJson.version}';
-export const NAME = '${packageJson.name}';
-export const DESCRIPTION = '${packageJson.description || ""}';
+export const PACKAGE_NAME = '${packageJson.name.toLowerCase()}'; // Ensure lowercase
 `;
 
 fs.writeFileSync(path.join(rootDir, 'src', 'version.ts'), versionTsContent);

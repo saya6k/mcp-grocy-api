@@ -4,6 +4,10 @@
   "description": "Model Context Protocol (MCP) wrapper for grocy API",
   "license": "MIT",
   "type": "module",
+  "publishConfig": {
+    "name": "mcp-grocy-api",
+    "access": "public"
+  },
   "bin": "build/index.js",
   "files": [
     "build",

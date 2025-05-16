@@ -15,6 +15,9 @@ import {
 import axios, { AxiosInstance, AxiosRequestConfig, Method } from 'axios';
 import { VERSION, PACKAGE_NAME as SERVER_NAME } from './version.js';
 
+// Debug output to help identify version and naming issues
+console.error(`Starting ${SERVER_NAME} server version ${VERSION}`);
+
 if (!process.env.GROCY_BASE_URL) {
   console.error('GROCY_BASE_URL environment variable is not set. Setting default to http://localhost:9283');
   process.env.GROCY_BASE_URL = 'http://localhost:9283';
