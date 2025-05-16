@@ -2,9 +2,12 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pkg from '../package.json' assert { type: 'json' };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Read package.json manually instead of using import assertion
+const pkgPath = path.resolve(__dirname, '../package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
 // Ensure the build directory exists
 const buildDir = path.resolve(__dirname, '../build');
@@ -35,4 +38,4 @@ if (fs.existsSync(resourcesDir)) {
   console.log('Copied resources to build directory');
 }
 
-main().catch(console.error);
+// Remove the main().catch(console.error); line as main() is not defined

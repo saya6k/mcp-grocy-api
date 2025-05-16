@@ -13,7 +13,7 @@ import {
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
 import axios, { AxiosInstance, AxiosRequestConfig, Method } from 'axios';
-import { VERSION, SERVER_NAME } from './version.js';
+import { VERSION, PACKAGE_NAME as SERVER_NAME } from './version.js';
 
 if (!process.env.GROCY_BASE_URL) {
   console.error('GROCY_BASE_URL environment variable is not set. Setting default to http://localhost:9283');
