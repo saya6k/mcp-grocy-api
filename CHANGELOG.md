@@ -1,3 +1,11 @@
+## [1.0.6](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.5...v1.0.6) (2025-05-16)
+
+
+### Bug Fixes
+
+* resolve npm package naming error ([d1270e1](https://github.com/saya6k/mcp-grocy-api/commit/d1270e12097621736df1a349789b98ad2e61a95e))
+* update SDK version and fix version imports ([e6d6f51](https://github.com/saya6k/mcp-grocy-api/commit/e6d6f5113a159b059244c47630982541e7169b38))
+
 ## [1.0.5](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.4...v1.0.5) (2025-05-16)
 
 
