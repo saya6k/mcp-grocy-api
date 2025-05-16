@@ -869,11 +869,7 @@ class GrocyApiServer {
                 type: 'string',
                 description: 'Optional note'
               }
-            },
-            anyOf: [
-              { required: ['productId'] },
-              { required: ['stockEntryId'] }
-            ]
+            }
           },
         },
         {
