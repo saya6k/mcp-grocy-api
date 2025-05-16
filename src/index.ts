@@ -455,20 +455,6 @@ class GrocyApiServer {
           },
         },
         {
-          name: 'get_recipe_fulfillment',
-          description: 'Get fulfillment information for a specific recipe.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              recipeId: {
-                type: 'string',
-                description: 'ID of the recipe'
-              }
-            },
-            required: ['recipeId'],
-          },
-        },
-        {
           name: 'get_recipes_fulfillment',
           description: 'Get fulfillment information for all recipes.',
           inputSchema: {
