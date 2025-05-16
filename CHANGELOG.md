@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.1...v1.0.2) (2025-05-16)
+
+
+### Bug Fixes
+
+* improve npm publishing configuration ([6bc0a6b](https://github.com/saya6k/mcp-grocy-api/commit/6bc0a6ba260f00bedd122cb88450d33b6a2d3d54))
+
 ## [1.0.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.0...v1.0.1) (2025-05-16)
 
 
