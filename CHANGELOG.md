@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.2...v1.0.3) (2025-05-16)
+
+
+### Bug Fixes
+
+* resolved schema validation error in open_product tool ([54f7815](https://github.com/saya6k/mcp-grocy-api/commit/54f7815f0eb6473347b7d1d759ce1dac5148fef5))
+
 ## [1.0.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.1...v1.0.2) (2025-05-16)
 
 
