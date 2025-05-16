@@ -870,8 +870,7 @@ class GrocyApiServer {
                 description: 'Optional note'
               }
             },
-            required: [],
-            oneOf: [
+            anyOf: [
               { required: ['productId'] },
               { required: ['stockEntryId'] }
             ]
