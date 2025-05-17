@@ -1,3 +1,17 @@
+# [1.1.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.9...v1.1.0) (2025-05-17)
+
+
+### Bug Fixes
+
+* remove redundant get_recipe_fulfillment tool definition ([ebcef9b](https://github.com/saya6k/mcp-grocy-api/commit/ebcef9ba0585db20e0bcfcb2bc519f5989cfba54))
+
+
+### Features
+
+* Enhance Grocy API compatibility with version 4.5.0 ([a9c252e](https://github.com/saya6k/mcp-grocy-api/commit/a9c252e387cbd28466bc55c8e7db7b28af1dd6d3))
+* Enhance Grocy API compatibility with version 4.5.0 ([4c4fe00](https://github.com/saya6k/mcp-grocy-api/commit/4c4fe0046258141fc82fc6f35b6d668106bb254e))
+* update CI/CD pipeline to run on both main and dev branches ([3c5a255](https://github.com/saya6k/mcp-grocy-api/commit/3c5a255a8628c5cd3e2fcfbc6148eb12c6aa5ef1))
+
 ## [1.0.9](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.8...v1.0.9) (2025-05-16)
 
 
