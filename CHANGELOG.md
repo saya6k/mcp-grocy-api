@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.2...v1.2.0) (2025-05-17)
+
+
+### Bug Fixes
+
+* resolve Docker build errors and security warnings ([9e761f3](https://github.com/saya6k/mcp-grocy-api/commit/9e761f300e91a2e697389c698a682cac9274e33c))
+
+
+### Features
+
+* add Home Assistant addon support ([1e3b440](https://github.com/saya6k/mcp-grocy-api/commit/1e3b44001c16631c28cf875d89114d786b6573e7))
+
 ## [1.1.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.1...v1.1.2) (2025-05-17)
 
 
