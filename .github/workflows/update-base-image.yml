@@ -1,0 +1,82 @@
+name: Update Base Image
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Runs at 3 AM UTC every Monday
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-base-image:
+    name: Check for Base Image Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: Get Current Base Image Version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(grep -oP '(?<=ghcr.io/hassio-addons/base:)[0-9.]+' build.yaml | head -1)
+          echo "Current version: $CURRENT_VERSION"
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Get Latest Release Info
+        id: latest-release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/hassio-addons/addon-base/releases/latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Latest Version
+        id: extract-version
+        run: |
+          LATEST_VERSION=$(echo '${{ steps.latest-release.outputs.data }}' | jq -r '.tag_name' | sed 's/v//')
+          echo "Latest version: $LATEST_VERSION"
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Compare Versions
+        id: compare-versions
+        run: |
+          CURRENT_MAJOR=$(echo "${{ steps.current-version.outputs.current_version }}" | cut -d. -f1)
+          LATEST_MAJOR=$(echo "${{ steps.extract-version.outputs.latest_version }}" | cut -d. -f1)
+          
+          if [ "$CURRENT_MAJOR" -eq "$LATEST_MAJOR" ] && [ "${{ steps.current-version.outputs.current_version }}" != "${{ steps.extract-version.outputs.latest_version }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "Non-breaking update available: ${{ steps.current-version.outputs.current_version }} -> ${{ steps.extract-version.outputs.latest_version }}"
+          else
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+            if [ "$CURRENT_MAJOR" -ne "$LATEST_MAJOR" ]; then
+              echo "Major version change detected, skipping update."
+            else
+              echo "Already using the latest version."
+            fi
+          fi
+      
+      - name: Update build.yaml
+        if: steps.compare-versions.outputs.update_needed == 'true'
+        run: |
+          sed -i "s/ghcr.io\/hassio-addons\/base:[0-9.]\+/ghcr.io\/hassio-addons\/base:${{ steps.extract-version.outputs.latest_version }}/g" build.yaml
+          cat build.yaml
+      
+      - name: Create Pull Request
+        if: steps.compare-versions.outputs.update_needed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): update base image to ${{ steps.extract-version.outputs.latest_version }}"
+          branch: deps/update-base-image
+          delete-branch: true
+          title: "Update base image to ${{ steps.extract-version.outputs.latest_version }}"
+          body: |
+            This PR updates the Home Assistant Add-on base image from ${{ steps.current-version.outputs.current_version }} to ${{ steps.extract-version.outputs.latest_version }}.
+            
+            This is a non-breaking update within the same major version.
+            
+            Release notes: https://github.com/hassio-addons/addon-base/releases/tag/v${{ steps.extract-version.outputs.latest_version }}
+          labels: |
+            dependencies
+            automated pr
