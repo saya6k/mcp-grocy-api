@@ -1,0 +1,46 @@
+name: Sync Dev Branch After Release
+
+on:
+  workflow_run:
+    workflows: ["CI/CD Pipeline"]
+    branches: [main]
+    types: 
+      - completed
+
+jobs:
+  sync-dev:
+    name: Sync Dev Branch with Main
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+      - name: Sync dev branch with main
+        run: |
+          # Fetch all branches
+          git fetch origin
+          
+          # Check if dev branch exists
+          if git ls-remote --heads origin dev | grep -q 'dev'; then
+            # Create tracking branch for dev
+            git checkout --track origin/dev || git checkout dev
+            
+            # Get latest changes from main
+            git pull origin main
+            
+            # Push changes to dev
+            git push origin dev
+            
+            echo "Successfully synchronized dev branch with main"
+          else
+            echo "Dev branch does not exist. Skipping synchronization."
+          fi
