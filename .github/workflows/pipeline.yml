@@ -39,8 +39,14 @@ jobs:
           node-version: 18
           cache: 'npm'
       - run: npm install
+      - name: npm audit Check
+        run: npm audit check --audit-level=high || true # Continue even if tests fail for test
+      - name: npm audit Fix
+        run: npm audit fix || true # Continue even if tests fail for test
+      - name: Build test
+        run: npm run build
       - name: Run tests
-        run: npm test || true # Continue even if tests fail for now
+        run: npm test
 
   build:
     name: Build
