@@ -3,13 +3,25 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+  pull_reques  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [build]
+    # Allow releases when pushing to main or when merging a PR from dev to main
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+    outputs:
+      version: ${{ steps.package-version.outputs.VERSION }}
+    steps:anches: [main, dev]
   workflow_dispatch:
 
 permissions:
   contents: write
-  pull-requests: write
+  pull-r  update-submodule:
+    name: Update hassio-addons Submodule
+    runs-on: ubuntu-latest
+    needs: [release]
+    # Only update the submodule when changes are in main branch and release was successful
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release.outputs.version != ''s: write
   packages: write
 
 jobs:
@@ -72,6 +84,10 @@ jobs:
     needs: [build]
     # Allow releases when pushing to main or when merging a PR from dev to main
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+    outputs:
+      version: ${{ steps.package-version.outputs.VERSION }}
+    outputs:
+      version: ${{ steps.package-version.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -115,6 +131,7 @@ jobs:
           # Enable debug mode for more verbose output
           DEBUG: "semantic-release:*"
         run: npx semantic-release --debug
+        continue-on-error: false
       
       - name: Run Semantic Release - Dev Branch
         id: semantic-release-dev
@@ -131,25 +148,7 @@ jobs:
         if: (github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success') || (github.ref == 'refs/heads/dev' && steps.semantic-release-dev.outcome == 'success')
         run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-      # Update version in config.yaml for Home Assistant addon (main branch only)
-      - name: Update version in config.yaml
-        if: github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success'
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "Updating config.yaml version to $VERSION"
-          # More robust regex that handles both patterns
-          sed -i "s/version: \"[0-9]*\.[0-9]*\.[0-9]*\"/version: \"$VERSION\"/" config.yaml
-          
-          # Check if file was changed and commit if needed
-          if git diff --quiet config.yaml; then
-            echo "config.yaml already up to date"
-          else
-            git config --local user.email "github-actions[bot]@users.noreply.github.com"
-            git config --local user.name "github-actions[bot]"
-            git add config.yaml
-            git commit -m "chore: update addon version to $VERSION [skip ci]"
-            git push origin HEAD:main
-          fi
+      # Config.yaml version update is handled by semantic-release/exec plugin
       
       # For dev branch, log the version but don't update config.yaml or publish to NPM
       - name: Log dev version
@@ -157,13 +156,22 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "Created pre-release version $VERSION on dev branch (not updating config.yaml or publishing to npm)"
+          
+      # Verify NPM publishing for main branch
+      - name: Verify NPM publish
+        if: github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Release version $VERSION was published to npm"
+          # Check if package was published successfully
+          npm view mcp-grocy-api version | grep $VERSION && echo "✅ Successfully published to npm" || echo "⚠️ Publication to npm could not be verified"
 
   update-submodule:
     name: Update hassio-addons Submodule
     runs-on: ubuntu-latest
     needs: [release]
-    # Only update the submodule when changes are in main branch
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release.result == 'success'
+    # Only update the submodule when changes are in main branch and release was successful
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release.outputs.version != ''
     steps:
       - name: Checkout hassio-addons repository
         uses: actions/checkout@v4

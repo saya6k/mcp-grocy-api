@@ -14,10 +14,14 @@ const buildDir = path.resolve(__dirname, '../build');
 fs.ensureDirSync(buildDir);
 
 // Generate version.ts with package values
+const version = process.env.RELEASE_VERSION || pkg.version;
+console.log(`Using version: ${version}`);
+
 const versionContent = `
 // Auto-generated file - DO NOT MODIFY
-export const VERSION = '${pkg.version}';
+export const VERSION = '${version}';
 export const PACKAGE_NAME = '${pkg.name.toLowerCase()}'; // Ensure lowercase
+export const SERVER_NAME = 'grocy-api';
 `;
 
 fs.writeFileSync(

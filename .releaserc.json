@@ -14,13 +14,19 @@
     [
       "@semantic-release/npm", 
       {
-        "npmPublish": false
+        "npmPublish": true
+      }
+    ],
+    [
+      "@semantic-release/exec", 
+      {
+        "prepareCmd": "sed -i 's/version: \"[0-9]*\\.[0-9]*\\.[0-9]*\"/version: \"${nextRelease.version}\"/' config.yaml"
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": ["package.json", "CHANGELOG.md"],
+        "assets": ["package.json", "CHANGELOG.md", "config.yaml", "build/version.js"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
