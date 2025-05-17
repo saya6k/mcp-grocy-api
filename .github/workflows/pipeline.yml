@@ -40,7 +40,11 @@ jobs:
           cache: 'npm'
       - run: npm install
       - name: Run tests
-        run: npm test || true # Continue even if tests fail for now
+        run: npm test
+        env:
+          # Use mock mode for tests to avoid hitting real API endpoints
+          NODE_ENV: test
+          MOCK_API: true
 
   build:
     name: Build

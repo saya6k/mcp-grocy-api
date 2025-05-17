@@ -21,11 +21,20 @@ if (!fs.existsSync(resourcesDir)) {
 // Copy markdown files to resources directory
 try {
   const files = fs.readdirSync(rootDir);
-  const markdownFiles = files.filter(file => file.endsWith('.md'));
+  
+  // Define which files to include or exclude
+  const filesToExclude = ['CHANGELOG.md', 'README.md', 'DOCS.md']; // Files to exclude
+  // OR: const filesToInclude = ['REQUIRED_FILE.md']; // Only include these specific files
+  
+  const markdownFiles = files
+    .filter(file => file.endsWith('.md'))
+    .filter(file => !filesToExclude.includes(file)); // Exclude specified files
+    // OR: .filter(file => filesToInclude.includes(file)); // Only include specified files
+  
   markdownFiles.forEach(file => {
     fs.copyFileSync(path.join(rootDir, file), path.join(resourcesDir, file));
   });
-  console.log('📝 Copied markdown resources');
+  console.log(`📝 Copied ${markdownFiles.length} markdown resources`);
 } catch (error) {
   console.error('Error copying markdown files:', error);
 }
