@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.1...v1.1.2) (2025-05-17)
+
+
+### Bug Fixes
+
+* ignore config.yaml (automatically update) ([a644b2e](https://github.com/saya6k/mcp-grocy-api/commit/a644b2ee7c5e30a3e692c7b90b2b22f0fd390fc1))
+
 ## [1.1.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.0...v1.1.1) (2025-05-17)
 
 
