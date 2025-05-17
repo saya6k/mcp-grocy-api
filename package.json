@@ -1,6 +1,6 @@
 {
   "name": "mcp-grocy-api",
-  "version": "1.0.0-dev.1",
+  "version": "1.3.1",
   "description": "Model Context Protocol (MCP) wrapper for grocy API",
   "license": "MIT",
   "type": "module",
