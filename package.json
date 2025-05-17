@@ -8,7 +8,9 @@
     "name": "mcp-grocy-api",
     "access": "public"
   },
-  "bin": "build/index.js",
+  "bin": {
+    "mcp-grocy-api": "./build/index.js"
+  },
   "files": [
     "build",
     "README.md",

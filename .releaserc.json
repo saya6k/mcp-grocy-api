@@ -1,5 +1,6 @@
 {
   "branches": [
+    "main",
     {
       "name": "dev",
       "prerelease": true,
@@ -13,8 +14,7 @@
     [
       "@semantic-release/npm", 
       {
-        "npmPublish": false,
-        "tarballDir": "pack"
+        "npmPublish": false
       }
     ],
     [
@@ -25,6 +25,5 @@
       }
     ],
     "@semantic-release/github"
-  ],
-  "tagFormat": "v${version}-dev"
+  ]
 }

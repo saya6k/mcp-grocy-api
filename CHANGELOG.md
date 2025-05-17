@@ -1,9 +1,9 @@
-## [1.3.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.0...v1.3.1) (2025-05-17)
+
 
 
 ### Bug Fixes
 
-* prevent npm publishing from dev branch and use separate semantic-release configs ([b5a8e40](https://github.com/saya6k/mcp-grocy-api/commit/b5a8e40be17a2fb4cbe43ab49d17fa651de32245))
+
 
 # [1.3.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.2.0...v1.3.0) (2025-05-17)
 
