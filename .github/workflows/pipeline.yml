@@ -105,8 +105,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           
       # Generate semantic version & changelog from commit messages
-      - name: Semantic Release
+      # Use different configs based on branch
+      - name: Run Semantic Release - Main Branch
         id: semantic-release
+        if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -115,17 +117,32 @@ jobs:
           DEBUG: "semantic-release:*"
         run: npx semantic-release --debug
       
+      - name: Run Semantic Release - Dev Branch
+        id: semantic-release-dev
+        if: github.ref == 'refs/heads/dev'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Enable debug mode for more verbose output
+          DEBUG: "semantic-release:*"
+        run: npx semantic-release --debug -e ./.release-dev.json
+      
+      # Publish to NPM only when on main branch and semantic-release succeeded
+      - name: Publish to NPM
+        if: github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish
+      
       # Store the new version number as an output variable
       - name: Get version from package.json
         id: package-version
-        if: steps.semantic-release.outcome == 'success'
+        if: (github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success') || (github.ref == 'refs/heads/dev' && steps.semantic-release-dev.outcome == 'success')
         run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-      # Update version in config.yaml for Home Assistant addon
-      # The semantic-release/git plugin should already commit config.yaml,
-      # but this ensures the version is updated even if semantic-release doesn't update it
+      # Update version in config.yaml for Home Assistant addon (main branch only)
       - name: Update version in config.yaml
-        if: steps.semantic-release.outcome == 'success'
+        if: github.ref == 'refs/heads/main' && steps.semantic-release.outcome == 'success'
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "Updating config.yaml version to $VERSION"
@@ -140,14 +157,15 @@ jobs:
             git config --local user.name "github-actions[bot]"
             git add config.yaml
             git commit -m "chore: update addon version to $VERSION [skip ci]"
-            
-            # Push to appropriate branch
-            if [[ $GITHUB_REF == refs/heads/main ]]; then
-              git push origin HEAD:main
-            elif [[ $GITHUB_REF == refs/heads/dev ]]; then
-              git push origin HEAD:dev
-            fi
+            git push origin HEAD:main
           fi
+      
+      # For dev branch, log the version but don't update config.yaml or publish to NPM
+      - name: Log dev version
+        if: github.ref == 'refs/heads/dev' && steps.semantic-release-dev.outcome == 'success'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Created pre-release version $VERSION on dev branch (not updating config.yaml or publishing to npm)"
 
   update-submodule:
     name: Update hassio-addons Submodule
