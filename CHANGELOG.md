@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.0...v1.1.1) (2025-05-17)
+
+
+### Bug Fixes
+
+* remove redundant resource file duplication in build process ([0ec729c](https://github.com/saya6k/mcp-grocy-api/commit/0ec729c16169493d92e3b13ed2ea37514c038fba))
+
 # [1.1.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.0.9...v1.1.0) (2025-05-17)
 
 
