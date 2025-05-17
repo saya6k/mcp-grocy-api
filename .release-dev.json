@@ -6,6 +6,12 @@
       "channel": "dev"
     }
   ],
+  "verifyConditions": [
+    "@semantic-release/changelog",
+    "@semantic-release/exec",
+    "@semantic-release/git",
+    "@semantic-release/github"
+  ],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -15,7 +21,8 @@
       {
         "npmPublish": false,
         "tarballDir": "pack",
-        "pkgRoot": "."
+        "pkgRoot": ".",
+        "verifyConditions": false
       }
     ],
     [

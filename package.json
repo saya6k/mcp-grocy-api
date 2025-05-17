@@ -25,7 +25,8 @@
     "docker-build": "node scripts/docker-build.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check-tools": "ts-node scripts/check-tools.ts",
+    "check-tools": "node scripts/check-tools.js",
+    "validate-release": "node scripts/check-tools.js --validate-release",
     "update-api-docs": "node scripts/fetch-grocy-api.js"
   },
   "dependencies": {
