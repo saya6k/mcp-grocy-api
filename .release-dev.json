@@ -1,5 +1,5 @@
 {
-  "branches": ["main"],
+  "branches": ["dev"],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -7,14 +7,13 @@
       "changelogFile": "CHANGELOG.md"
     }],
     ["@semantic-release/npm", {
-      "npmPublish": true
+      "npmPublish": false
     }],
-    "@semantic-release/github",
     ["@semantic-release/git", {
-      "assets": ["package.json", "CHANGELOG.md", "config.yaml"],
+      "assets": ["package.json", "CHANGELOG.md"],
       "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
     }]
   ],
   "preset": "angular",
-  "tagFormat": "v${version}"
+  "tagFormat": "v${version}-dev"
 }

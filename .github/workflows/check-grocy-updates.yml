@@ -1,0 +1,104 @@
+name: Check Grocy Updates
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # Runs at 4 AM UTC every Monday
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-grocy-updates:
+    name: Check for Grocy Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: Get Current Grocy Support Version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(grep -A 2 "Enhance Grocy API compatibility" CHANGELOG.md | grep -oP '(?<=version )[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo "0.0.0")
+          echo "Current supported version: $CURRENT_VERSION"
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Get Latest Grocy Release
+        id: latest-release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/grocy/grocy/releases/latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Latest Version
+        id: extract-version
+        run: |
+          LATEST_VERSION=$(echo '${{ steps.latest-release.outputs.data }}' | jq -r '.tag_name' | sed 's/v//')
+          echo "Latest Grocy version: $LATEST_VERSION"
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Compare Versions
+        id: compare-versions
+        run: |
+          # Extract version components
+          CURRENT_MAJOR=$(echo "${{ steps.current-version.outputs.current_version }}" | cut -d. -f1)
+          CURRENT_MINOR=$(echo "${{ steps.current-version.outputs.current_version }}" | cut -d. -f2)
+          LATEST_MAJOR=$(echo "${{ steps.extract-version.outputs.latest_version }}" | cut -d. -f1)
+          LATEST_MINOR=$(echo "${{ steps.extract-version.outputs.latest_version }}" | cut -d. -f2)
+          
+          # Determine update type
+          if [ "$CURRENT_MAJOR" -lt "$LATEST_MAJOR" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "update_type=major" >> $GITHUB_OUTPUT
+            echo "Major version update available: ${{ steps.current-version.outputs.current_version }} -> ${{ steps.extract-version.outputs.latest_version }}"
+          elif [ "$CURRENT_MAJOR" -eq "$LATEST_MAJOR" ] && [ "$CURRENT_MINOR" -lt "$LATEST_MINOR" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "update_type=minor" >> $GITHUB_OUTPUT
+            echo "Minor version update available: ${{ steps.current-version.outputs.current_version }} -> ${{ steps.extract-version.outputs.latest_version }}"
+          elif [ "${{ steps.current-version.outputs.current_version }}" != "${{ steps.extract-version.outputs.latest_version }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "update_type=patch" >> $GITHUB_OUTPUT
+            echo "Patch update available: ${{ steps.current-version.outputs.current_version }} -> ${{ steps.extract-version.outputs.latest_version }}"
+          else
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+            echo "Already supporting the latest Grocy version."
+          fi
+      
+      - name: Create Issue for Grocy Update
+        if: steps.compare-versions.outputs.update_needed == 'true'
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: "${{ steps.compare-versions.outputs.update_type == 'major' && 'BREAKING: ' || '' }}New Grocy version ${{ steps.extract-version.outputs.latest_version }} available"
+          content: |
+            A new ${{ steps.compare-versions.outputs.update_type }} version of Grocy has been released: ${{ steps.extract-version.outputs.latest_version }}
+            
+            Currently supported version in this project: ${{ steps.current-version.outputs.current_version }}
+            
+            ## Update Type: ${{ steps.compare-versions.outputs.update_type }}
+            
+            ${{ steps.compare-versions.outputs.update_type == 'major' && '⚠️ **This is a major version change and might include breaking changes!**' || '' }}
+            ${{ steps.compare-versions.outputs.update_type == 'minor' && '🆕 This minor version might include new features but should be backward compatible.' || '' }}
+            ${{ steps.compare-versions.outputs.update_type == 'patch' && '🐛 This is a patch version that likely contains bug fixes only.' || '' }}
+            
+            ## Action items
+            
+            1. Check the Grocy release notes: https://github.com/grocy/grocy/releases/tag/v${{ steps.extract-version.outputs.latest_version }}
+            2. Test the new Grocy version with this project
+            3. Update compatibility documentation and code as needed
+            4. Update CHANGELOG.md with the new supported version
+            
+            ## API Changes to Check
+            
+            - [ ] Check if any API endpoints have changed
+            - [ ] Verify authentication methods
+            - [ ] Test data schemas and responses
+            - [ ] Review any breaking changes
+          labels: |
+            enhancement
+            dependencies
+            ${{ steps.compare-versions.outputs.update_type }}

@@ -1,10 +1,23 @@
 # Grocy API Testing Examples
 
+## Setting Up Your Private Demo Instance
+
+Before testing the API, you can create your own private Grocy demo instance:
+
+1. Visit [https://demo.grocy.info](https://demo.grocy.info).
+2. Look for "Create a private demo instance" section
+3. Create your personal instance which will remain available for testing
+4. Use the provided API key and URL in your `.env` file:
+   ```
+   GROCY_BASE_URL=https://your-name-xxxxx.demo.grocy.info
+   GROCY_APIKEY_VALUE=your-private-api-key
+   ```
+
 ⚠️ IMPORTANT: Only provide the endpoint path - do not include full URLs. Your path will be automatically resolved to the full URL.
 
-For example, if the base URL is `https://demo.grocy.info`:
-✅ Correct: `"/api/objects/products"` → Resolves to: `https://demo.grocy.info/api/objects/products`
-❌ Incorrect: `"https://demo.grocy.info/api/objects/products"` or `"www.grocy.example.com/api/objects/products"`
+For example, if the base URL is `https://your-own-demo.grocy.info`:
+✅ Correct: `"/api/objects/products"` → Resolves to: `https://your-own-demo.grocy.info/api/objects/products`
+❌ Incorrect: `"https://your-own-demo.grocy.info/api/objects/products"` or `"www.grocy.example.com/api/objects/products"`
 
 ## Basic API Tools
 

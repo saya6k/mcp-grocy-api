@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.2.0...v1.3.0) (2025-05-17)
+
+
+### Features
+
+* add Grocy API reference in resources ([d5d7d65](https://github.com/saya6k/mcp-grocy-api/commit/d5d7d6509bd9168236df72bf39352575ce9533c6))
+
 # [1.2.0](https://github.com/saya6k/mcp-grocy-api/compare/v1.1.2...v1.2.0) (2025-05-17)
 
 

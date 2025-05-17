@@ -7,7 +7,7 @@ The Grocy API testing tool (`test_request`) returns a comprehensive JSON respons
 ```json
 {
   "request": {
-    "url": "https://demo.grocy.info/api/objects/products/1",
+    "url": "https://your-own-demo.grocy.info/api/objects/products/1",
     "method": "GET",
     "headers": {
       "GROCY-API-KEY": "[REDACTED]",
@@ -39,6 +39,38 @@ The Grocy API testing tool (`test_request`) returns a comprehensive JSON respons
   }
 }
 ```
+
+## Setting Up Your Own Private Demo Instance
+
+Before testing the API, you may want to set up your own private Grocy demo instance. This gives you a persistent environment for development and testing without having to install Grocy locally.
+
+### Creating a Private Demo Instance
+
+1. Visit [https://demo.grocy.info](https://demo.grocy.info)
+2. At the top of the page, find the "Create a private demo instance" section
+3. Fill in the form to create your personalized demo
+4. Once created, you'll receive:
+   - A unique URL for your instance (e.g., `https://your-name-xxxxx.demo.grocy.info`)
+   - An API key for API access
+   - Login credentials (username/password) for web access
+
+### Benefits of Private Demo Instances
+
+- **Persistence**: Your data remains available for a longer period (compared to the temporary demo)
+- **Privacy**: Only you have access to your instance
+- **Testing**: Ideal for testing API integrations without affecting production data
+- **No Installation**: No need to host Grocy on your own server
+
+### Using Your Private Demo in API Requests
+
+Configure your environment with the private demo details:
+
+```
+GROCY_BASE_URL=https://your-name-xxxxx.demo.grocy.info
+GROCY_APIKEY_VALUE=your-private-api-key
+```
+
+These values can be set in your `.env` file for local development or in your project configuration for production use.
 
 ## Response Fields for `test_request`
 
@@ -105,7 +137,7 @@ If the `test_request` tool encounters an API error (e.g., authentication failure
 ```json
 {
   "request": {
-    "url": "https://demo.grocy.info/api/objects/products",
+    "url": "https://your-own-demo.grocy.info/api/objects/products",
     "method": "GET",
     "headers": {
       "GROCY-API-KEY": "[REDACTED]"
