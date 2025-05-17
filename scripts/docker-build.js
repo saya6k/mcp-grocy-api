@@ -11,33 +11,9 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'
 
 console.log('🐳 Preparing build for Docker environment...');
 
-// Create resources directory
-const resourcesDir = path.join(rootDir, 'resources');
-if (!fs.existsSync(resourcesDir)) {
-  fs.mkdirSync(resourcesDir, { recursive: true });
-  console.log('📁 Created resources directory');
-}
-
-// Copy markdown files to resources directory
-try {
-  const files = fs.readdirSync(rootDir);
-  
-  // Define which files to include or exclude
-  const filesToExclude = ['CHANGELOG.md', 'README.md', 'DOCS.md']; // Files to exclude
-  // OR: const filesToInclude = ['REQUIRED_FILE.md']; // Only include these specific files
-  
-  const markdownFiles = files
-    .filter(file => file.endsWith('.md'))
-    .filter(file => !filesToExclude.includes(file)); // Exclude specified files
-    // OR: .filter(file => filesToInclude.includes(file)); // Only include specified files
-  
-  markdownFiles.forEach(file => {
-    fs.copyFileSync(path.join(rootDir, file), path.join(resourcesDir, file));
-  });
-  console.log(`📝 Copied ${markdownFiles.length} markdown resources`);
-} catch (error) {
-  console.error('Error copying markdown files:', error);
-}
+// Note: We no longer create a redundant resources directory at the root
+// The src/resources directory already contains our documentation files
+// and build.js will handle copying these to the build directory
 
 // Generate version.ts file
 const versionTsContent = `// Generated version file for Docker build

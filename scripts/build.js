@@ -28,14 +28,25 @@ fs.writeFileSync(
 
 console.log('Generated version.ts with package values');
 
-// Copy resources directory to build
-const resourcesDir = path.resolve(__dirname, '../resources');
+// Copy src/resources directory to build/resources
+const srcResourcesDir = path.resolve(__dirname, '../src/resources');
 const buildResourcesDir = path.resolve(buildDir, 'resources');
 
-if (fs.existsSync(resourcesDir)) {
+// Ensure src/resources exists and copy it
+if (fs.existsSync(srcResourcesDir)) {
   fs.ensureDirSync(buildResourcesDir);
-  fs.copySync(resourcesDir, buildResourcesDir);
-  console.log('Copied resources to build directory');
+  fs.copySync(srcResourcesDir, buildResourcesDir);
+  console.log('Copied src/resources to build/resources directory');
 }
+
+// Copy important root MD files (README, CHANGELOG, DOCS) to build/resources as well
+const rootDir = path.resolve(__dirname, '..');
+['README.md', 'CHANGELOG.md', 'DOCS.md'].forEach(file => {
+  const sourcePath = path.join(rootDir, file);
+  if (fs.existsSync(sourcePath)) {
+    fs.copySync(sourcePath, path.join(buildResourcesDir, file));
+    console.log(`Copied ${file} to build/resources`);
+  }
+});
 
 // Remove the main().catch(console.error); line as main() is not defined
