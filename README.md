@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/mcp-grocy-api.svg)](https://www.npmjs.com/package/mcp-grocy-api)
 [![Docker Image](https://img.shields.io/badge/docker%20image-ghcr.io-blue)](https://github.com/saya6k/mcp-grocy-api/pkgs/container/mcp-grocy-api)
 [![License](https://img.shields.io/github/license/saya6k/mcp-grocy-api)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow.svg)](https://www.buymeacoffee.com/my7nmfcm92k)
 
 This project is a specialized fork of [mcp-rest-api](https://github.com/dkmaker/mcp-rest-api), refactored to work specifically with Grocy's API.
 
