@@ -3,25 +3,13 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main, dev]
-  pull_reques  release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: [build]
-    # Allow releases when pushing to main or when merging a PR from dev to main
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-    outputs:
-      version: ${{ steps.package-version.outputs.VERSION }}
-    steps:anches: [main, dev]
+  pull_request:
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
   contents: write
-  pull-r  update-submodule:
-    name: Update hassio-addons Submodule
-    runs-on: ubuntu-latest
-    needs: [release]
-    # Only update the submodule when changes are in main branch and release was successful
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.release.outputs.version != ''s: write
+  pull-requests: write
   packages: write
 
 jobs:
@@ -84,8 +72,6 @@ jobs:
     needs: [build]
     # Allow releases when pushing to main or when merging a PR from dev to main
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-    outputs:
-      version: ${{ steps.package-version.outputs.VERSION }}
     outputs:
       version: ${{ steps.package-version.outputs.VERSION }}
     steps:
