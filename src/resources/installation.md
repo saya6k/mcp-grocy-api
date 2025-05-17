@@ -33,7 +33,11 @@ Or you can use Docker:
       "command": "docker",
       "args": [
         "run",
-        "ghcr.io/saya6k/mcp-grocy-api"
+        "ghcr.io/saya6k/mcp-grocy-api",
+        "tini",
+        "--",
+        "node",
+        "build/index.js"
         ],
       "env": {
         "GROCY_BASE_URL": "",
@@ -86,8 +90,8 @@ To run using Docker, you first need to build the Docker image:
 docker build -t ghcr.io/saya6k/mcp-grocy-api .
 ```
 
-Then run the container:
+Then run the container with tini:
 
 ```bash
-docker run -p mcp-grocy-api
+docker run -p mcp-grocy-api tini -- node build/index.js
 ```

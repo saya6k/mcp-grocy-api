@@ -1,0 +1,32 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Add-on: Grocy API
+#
+# This script is executed when the Grocy API Server terminates
+# ==============================================================================
+
+# Get the exit code of the application
+EXIT_CODE=$1
+SIGNAL_NUM=$2
+CORE_DUMPED=$3
+
+# Log the reason for termination with appropriate severity level
+if (( SIGNAL_NUM > 0 )); then
+  if (( CORE_DUMPED > 0 )); then
+    bashio::log.critical "Application crashed with signal ${SIGNAL_NUM} and produced a core dump."
+  else
+    bashio::log.warning "Application terminated with signal ${SIGNAL_NUM}."
+  fi
+else
+  if (( EXIT_CODE == 0 )); then
+    bashio::log.info "Application stopped gracefully with exit code ${EXIT_CODE}."
+  else
+    bashio::log.error "Application exited with non-zero exit code ${EXIT_CODE}."
+  fi
+fi
+
+# Perform any necessary cleanup here
+bashio::log.info "Cleaning up resources..."
+
+# Return the original exit code
+exit ${EXIT_CODE}

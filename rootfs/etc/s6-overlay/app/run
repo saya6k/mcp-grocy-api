@@ -1,0 +1,31 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Home Assistant Add-on: MCP Grocy API
+#
+# This script starts the MCP Grocy API Server.
+# ==============================================================================
+
+# --- Read configuration from config.yaml ---
+export GROCY_BASE_URL=$(bashio::config 'grocy_url')
+export GROCY_APIKEY_VALUE=$(bashio::config 'grocy_api_key')
+export GROCY_ENABLE_SSL_VERIFY=$(bashio::config 'enable_ssl_verify')
+export REST_RESPONSE_SIZE_LIMIT=$(bashio::config 'response_size_limit')
+# export PORT=$(bashio::config 'port')
+
+bashio::log.info "Starting Grocy API Server..."
+# bashio::log.info "Port: ${PORT}"
+bashio::log.info "Grocy URL: ${GROCY_BASE_URL}"
+bashio::log.info "SSL Verification: ${GROCY_ENABLE_SSL_VERIFY}"
+bashio::log.info "Response Size Limit: ${REST_RESPONSE_SIZE_LIMIT}"
+
+# --- Define application paths ---
+# APP_BASE_DIR is the working directory set in Dockerfile, and where app files are copied.
+APP_BASE_DIR="/app"
+
+# --- Navigate to application base directory and start the server ---
+cd "${APP_BASE_DIR}" || exit 1
+
+bashio::log.info "Executing Node.js application: node build/index.js"
+
+# Start the application
+exec node build/index.js

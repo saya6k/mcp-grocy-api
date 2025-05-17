@@ -1,0 +1,59 @@
+# .github/workflows/docker-test.yml
+name: Test Docker Image Build
+
+on:
+  push:
+    branches:
+      - dev # Trigger on push to dev branch
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: read # Needed to check out code and read package.json
+
+jobs:
+  test-build:
+    name: Test Docker Image Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Set up QEMU for multi-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # Build for AMD64 (most systems) but don't push
+      - name: Test build AMD64 image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: false
+          tags: test-grocy-api:amd64-test
+          build-args: |
+            NODE_VERSION=20
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Test build ARM64 separately with special settings but don't push
+      - name: Test build ARM64 image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/arm64
+          push: false
+          tags: test-grocy-api:arm64-test
+          build-args: |
+            NODE_VERSION=20
+            NODE_OPTIONS=--max_old_space_size=4096
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
