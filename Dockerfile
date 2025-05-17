@@ -17,12 +17,12 @@ WORKDIR /app
 RUN if echo "$BUILD_FROM" | grep -q "home-assistant"; then \
     # Home Assistant base already has curl and jq
     echo "Installing Node.js v${NODE_VERSION} for Home Assistant addon..." && \
-    apk add --no-cache nodejs~=${NODE_VERSION} npm && \
+    apk add --no-cache nodejs npm && \
     rm -rf /tmp/* /var/tmp/*; \
 else \
     # Regular Alpine needs all dependencies
     echo "Installing Node.js v${NODE_VERSION} for docker build..." && \
-    apk add --no-cache nodejs~=${NODE_VERSION} npm tini && \
+    apk add --no-cache nodejs npm tini && \
     rm -rf /tmp/* /var/tmp/*; \
 fi
 
@@ -54,11 +54,12 @@ RUN if echo "$BUILD_FROM" | grep -q "home-assistant"; then \
 RUN npm run build
 
 # --- Environment Variables ---
-# Port for the SSE server (and Admin UI if enabled)
-ENV GROCY_BASE_URL=
-ENV GROCY_APIKEY_VALUE=
-ENV GROCY_ENABLE_SSL_VERIFY=
-ENV REST_RESPONSE_SIZE_LIMIT=
+# Non-sensitive environment configuration (endpoints & settings)
+ENV GROCY_BASE_URL=""
+# API key should be passed at runtime, not built into image
+ENV GROCY_APIKEY_VALUE=""
+ENV GROCY_ENABLE_SSL_VERIFY="true"
+ENV REST_RESPONSE_SIZE_LIMIT="10mb"
 
 # --- Volumes ---
 
