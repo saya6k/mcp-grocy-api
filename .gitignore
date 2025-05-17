@@ -4,6 +4,7 @@ src/version.ts
 
 # Automatically generated files
 /CHANGELOG.md
+/config.yaml
 
 # Docker test builds
 mcp-grocy-api:test

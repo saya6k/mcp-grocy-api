@@ -11,14 +11,20 @@ This project is a specialized fork of [mcp-rest-api](https://github.com/dkmaker/
 ### NPM
 
 ```bash
-npm install mcp-grocy-api
+git clone https://github.com/saya6k/mcp-grocy-api.git
+cd mcp-grocy-api
+npm install
+npm audit fix
+npm build
+node ./build/index.js
 ```
 
 ### Docker
 
+You should use [tini](https://github.com/krallin/tini) to init.
 ```bash
 docker pull ghcr.io/saya6k/mcp-grocy-api:latest
-docker run -p 8181:8181 ghcr.io/saya6k/mcp-grocy-api:latest
+docker run ghcr.io/saya6k/mcp-grocy-api:latest tini -- node build/index.js
 ```
 
 See [installation.md](src/resources/installation.md) for more installation options and configuration instructions.
