@@ -11,6 +11,7 @@ permissions:
   contents: write
   pull-requests: write
   packages: write
+  issues: write
 
 jobs:
   lint:
@@ -97,7 +98,9 @@ jobs:
           name: build
           path: build/
       
-      - name: Verify npm token
+      # Conditionally setup npm token for main branch only
+      - name: Setup npm token for main branch
+        if: github.ref == 'refs/heads/main'
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
@@ -124,6 +127,8 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use a dummy NPM token for dev branch (where npmPublish is false)
+          NPM_TOKEN: "dummy-npm-token-not-used"
           # Enable debug mode for more verbose output
           DEBUG: "semantic-release:*"
         run: npx semantic-release --debug -e ./.release-dev.json
