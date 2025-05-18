@@ -1,3 +1,10 @@
+## [1.3.4-dev.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.4-dev.1...v1.3.4-dev.2) (2025-05-18)
+
+
+### Bug Fixes
+
+* Docker versioning and remove validate-release job ([ac2ef14](https://github.com/saya6k/mcp-grocy-api/commit/ac2ef14e7c8bd8fc7e7bb0768dd5dfdac43c11d3))
+
 ## [1.3.4-dev.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.3...v1.3.4-dev.1) (2025-05-18)
 
 
