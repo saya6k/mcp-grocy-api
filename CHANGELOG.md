@@ -1,3 +1,5 @@
+## [1.3.3-dev.3](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.3-dev.2...v1.3.3-dev.3) (2025-05-18)
+
 ## [1.3.3-dev.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.3-dev.1...v1.3.3-dev.2) (2025-05-18)
 
 
