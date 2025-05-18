@@ -36,6 +36,13 @@ jobs:
           script: |
             const packageVersion = "${{ steps.get_version.outputs.version }}";
             console.log(`Package version: ${packageVersion}`);
+            
+            // Always build for dev versions
+            if (packageVersion.includes('-dev')) {
+              console.log('Development version detected. Build needed.');
+              core.setOutput('needs_build', 'true');
+              return;
+            }
 
             try {
               const latestRelease = await github.rest.repos.getLatestRelease({
@@ -97,6 +104,21 @@ jobs:
             type=raw,value=latest
       
       # Build for AMD64 first (most systems)
+      - name: Determine Docker tags
+        id: docker_tags
+        if: steps.compare_versions.outputs.needs_build == 'true'
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          if [[ "$VERSION" == *-dev* ]]; then
+            echo "TAGS_AMD64=ghcr.io/${{ github.repository }}:$VERSION-amd64,ghcr.io/${{ github.repository }}:dev-amd64" >> $GITHUB_OUTPUT
+            echo "TAGS_ARM64=ghcr.io/${{ github.repository }}:$VERSION-arm64,ghcr.io/${{ github.repository }}:dev-arm64" >> $GITHUB_OUTPUT
+            echo "Creating dev tags for version $VERSION"
+          else
+            echo "TAGS_AMD64=ghcr.io/${{ github.repository }}:$VERSION-amd64,ghcr.io/${{ github.repository }}:latest-amd64" >> $GITHUB_OUTPUT
+            echo "TAGS_ARM64=ghcr.io/${{ github.repository }}:$VERSION-arm64,ghcr.io/${{ github.repository }}:latest-arm64" >> $GITHUB_OUTPUT
+            echo "Creating production tags for version $VERSION"
+          fi
+
       - name: Build and push AMD64 image
         if: steps.compare_versions.outputs.needs_build == 'true'
         uses: docker/build-push-action@v5
@@ -104,7 +126,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.version }}-amd64,ghcr.io/${{ github.repository }}:latest-amd64
+          tags: ${{ steps.docker_tags.outputs.TAGS_AMD64 }}
           build-args: |
             NODE_VERSION=20
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:latest-amd64
@@ -118,7 +140,7 @@ jobs:
           context: .
           platforms: linux/arm64
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.version }}-arm64,ghcr.io/${{ github.repository }}:latest-arm64
+          tags: ${{ steps.docker_tags.outputs.TAGS_ARM64 }}
           build-args: |
             NODE_VERSION=20
             NODE_OPTIONS=--max_old_space_size=4096
@@ -133,6 +155,12 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.version }}-amd64 \
             ghcr.io/${{ github.repository }}:${{ steps.get_version.outputs.version }}-arm64
           
-          docker buildx imagetools create -t ghcr.io/${{ github.repository }}:latest \
-            ghcr.io/${{ github.repository }}:latest-amd64 \
-            ghcr.io/${{ github.repository }}:latest-arm64
+          # Only tag as latest if it's not a dev version
+          if [[ "${{ steps.get_version.outputs.version }}" != *-dev* ]]; then
+            echo "Creating latest tag for production version"
+            docker buildx imagetools create -t ghcr.io/${{ github.repository }}:latest \
+              ghcr.io/${{ github.repository }}:latest-amd64 \
+              ghcr.io/${{ github.repository }}:latest-arm64
+          else
+            echo "Dev version detected, not creating latest tag"
+          fi
