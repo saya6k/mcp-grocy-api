@@ -1,3 +1,10 @@
+## [1.3.3-dev.2](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.3-dev.1...v1.3.3-dev.2) (2025-05-18)
+
+
+### Bug Fixes
+
+* update workflow to properly create package.json in validation step ([5778b11](https://github.com/saya6k/mcp-grocy-api/commit/5778b1179d60df84dab9e37f50168bf964ee4933))
+
 ## [1.3.3-dev.1](https://github.com/saya6k/mcp-grocy-api/compare/v1.3.2...v1.3.3-dev.1) (2025-05-18)
 
 
