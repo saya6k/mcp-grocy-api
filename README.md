@@ -1,5 +1,13 @@
 # MCP Grocy API
 
+> [!WARNING]
+> **This project is no longer maintained.**
+>
+> The maintainer no longer uses Grocy and cannot review issues, accept PRs,
+> or ship updates. This repository has been archived as of 2026-05-27.
+> If you'd like to continue development, please fork and maintain your own
+> version, or look for an active community fork.
+
 [![npm version](https://img.shields.io/npm/v/mcp-grocy-api.svg)](https://www.npmjs.com/package/mcp-grocy-api)
 [![Docker Image](https://img.shields.io/badge/docker%20image-ghcr.io-blue)](https://github.com/saya6k/mcp-grocy-api/pkgs/container/mcp-grocy-api)
 [![License](https://img.shields.io/github/license/saya6k/mcp-grocy-api)](LICENSE)
