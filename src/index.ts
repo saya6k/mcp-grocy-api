@@ -548,13 +548,9 @@ class GrocyApiServer {
           inputSchema: {
             type: 'object',
             properties: {
-              startDate: {
+              date: {
                 type: 'string',
-                description: 'Optional start date in YYYY-MM-DD format. Defaults to today.'
-              },
-              days: {
-                type: 'number',
-                description: 'Optional number of days to retrieve. Defaults to 7.'
+                description: 'Date in YYYY-MM-DD format. Defaults to today.'
               }
             },
             required: [],
@@ -1132,9 +1128,8 @@ class GrocyApiServer {
         case 'undo_action':
           return await this.handleUndoAction(request);
         case 'get_meal_plan':
-          const startDate = request.params.arguments?.startDate || new Date().toISOString().split('T')[0];
-          const days = request.params.arguments?.days || 7;
-          return await this.handleGrocyApiCall(`/objects/meal_plan?query%5B%5D=day%3E%3D${startDate}&limit=${days}`, 'Get meal plan');
+          const date = request.params.arguments?.date || new Date().toISOString().split('T')[0];
+          return await this.handleGrocyApiCall(`/objects/meal_plan?query%5B%5D=day%3D${date}&limit=100`, 'Get meal plan');
         case 'get_products':
           return await this.handleGrocyApiCall('/objects/products', 'Get all products');
         case 'get_recipes':
